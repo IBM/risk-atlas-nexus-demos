@@ -15,8 +15,8 @@ All content provided here is 'as is' and is maintained on a best effort basis.
 
 
 ### Add a demonstration
-[fork]: https://github.com/IBM/risk-atlas-nexus/fork
-[pr]: https://github.com/IBM/risk-atlas-nexus/compare
+[fork]: https://github.com/IBM/risk-atlas-nexus-demos/fork
+[pr]: https://github.com/IBM/risk-atlas-nexus-demos/compare
 [released]: https://help.github.com/articles/github-terms-of-service/
 If you wish to add a demonstration project:
 1. [Fork][fork] and clone this repository
