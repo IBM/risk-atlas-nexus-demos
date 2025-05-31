@@ -25,7 +25,7 @@ This project targets python version ">=3.11, <3.12". You can download specific v
    ```
 2. Please follow the instructions at https://github.com/IBM/risk-atlas-nexus#installation to install `Risk Atlas Nexus` library
 
-3. Update the config variables and inference engine params in the server config file. Start your LLM server viz. ollama, vllm. Update LLM server credentials in `cli/server_config.yaml`.
+3. Update the config variables and inference engine params in the server config file. Start your LLM server viz. ollama, vllm and update LLM server credentials in `cli/server_config.yaml`.
 
    - `nano cli/server_config.yaml`
 
@@ -33,7 +33,7 @@ This project targets python version ">=3.11, <3.12". You can download specific v
 
    - `python cli/server.py --config-file cli/server_config.yaml --host localhost --port 8000`
 
-5. Start the Agentic Governance client
+5. In a different terminal, initiate the Agentic Governance client.
    - `python cli/client.py --host localhost --port 8000`
 
 ## License
