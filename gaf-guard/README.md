@@ -8,7 +8,8 @@ GAF-Guard is an AI framework that can effectively detect and manage risks associ
 
 ## Architecture
 
-<img width="1262" alt="image" src="https://github.ibm.com/ai-gov-model-risk/agentic-governance/assets/380720/90a729e8-e95e-4383-a36b-ffc84a81287e">
+![90a729e8-e95e-4383-a36b-ffc84a81287e](https://github.com/user-attachments/assets/f0546c3d-cf95-49c8-8112-21308bf6f7e6)
+
 
 ## Installation
 
