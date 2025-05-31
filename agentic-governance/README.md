@@ -8,7 +8,8 @@ Agentic Governance is an AI framework that can effectively detect and manage ris
 
 ## Architecture
 
-<img width="1262" alt="image" src="https://github.ibm.com/ai-gov-model-risk/agentic-governance/assets/380720/90a729e8-e95e-4383-a36b-ffc84a81287e">
+![90a729e8-e95e-4383-a36b-ffc84a81287e](https://github.com/user-attachments/assets/83b42f49-9a8e-4bfa-a1fb-5b75caf89e75)
+
 
 ## Installation
 
