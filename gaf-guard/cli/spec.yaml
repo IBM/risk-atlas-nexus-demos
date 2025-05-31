@@ -1,0 +1,118 @@
+arazzo: 1.0.1
+info:
+  title: Agentic AI Governance
+  version: 1.0.0
+  description: >
+    Agentic AI framework for LLM governance
+# sourceDescriptions:
+#   - name: AI Governance API
+#     url: https://raw.githubusercontent.com/frankkilcommins/apidays-describing-api-workflows-with-arazzo/ef35e237576d7af2bc3be66d94ffca94eee5036d/specs/bnpl-eligibility.openapi.yaml
+#     type: openapi
+#   - name: BnplLoanApi
+#     url: https://raw.githubusercontent.com/frankkilcommins/apidays-describing-api-workflows-with-arazzo/ef35e237576d7af2bc3be66d94ffca94eee5036d/specs/bnpl-loan.openapi.yaml
+#     type: openapi
+workflows:
+  - workflowId: risk-generation
+    summary: Apply for a BNPL loan at checkout using the BNPL platform
+    description: >
+      This workflow describes the steps to secure a loan at checkout using a BNPL platform, involving multiple API calls 
+      to check product eligibility, determine customer eligibility, initiate the loan transaction, authenticate the customer, 
+      retrieve the payment plan, and update the order status.
+    inputs:
+      type: object
+      required:
+      - userIntent
+      properties:
+        userIntent:
+          description: Authorization token for the loan transaction.
+          type: string
+    steps:
+      - stepId: identify-user-intent-domain
+        description: Domain Identification
+        operationId: get_usecase_domain
+        parameters:
+          - name: user_intent
+            value: $inputs.userIntent
+        successCriteria:
+          - condition: $response.body#/domain != null
+        outputs:
+          domain: $response.body#/domain
+        # onSuccess:
+        #   - name: productsEligible
+        #     type: goto
+        #     stepId: getCustomerTermsAndConditions
+        #     criteria:
+        #       - condition: $response.body.productCodes != null
+        #   - name: productsNotEligible
+        #     type: end
+        #     criteria:
+        #       - condition: $response.body.productCodes == null
+      - stepId: generate-zero-shot
+        description: Questionnaire Prediction
+        operationId: generate_zero_shot
+        parameters:
+          - name: user_intent
+            value: $inputs.userIntent
+        successCriteria:
+          - condition: $response.body#/questionnaire != null
+        outputs:
+          questionnaire: $response.body#/questionnaire
+      - stepId: generate-few-shot
+        description: Questionnaire Prediction
+        operationId: generate_few_shot
+        parameters:
+          - name: user_intent
+            value: $inputs.userIntent
+        successCriteria:
+          - condition: $response.body#/questionnaire != null
+        outputs:
+          questionnaire: $response.body#/questionnaire
+      - stepId: identify-risks
+        description: Risk Generation
+        operationId: identify_risks
+        parameters:
+          - name: user_intent
+            value: $inputs.userIntent
+        successCriteria:
+          - condition: $response.body#/identified_risks != null
+        outputs:
+          identified_risks: $response.body#/identified_risks
+      - stepId: authenticateCustomerAndAuthorizeLoan
+        description: Authenticate the customer and obtain authorization for the loan.
+        operationId: $sourceDescriptions.BnplEligibilityApi.getAuthorization
+        parameters:
+          - name: authorizationToken
+            in: query
+            value: $inputs.token
+        successCriteria:
+          - condition: $statusCode == 200
+        outputs:
+          redirectUrl: $response.headers.Location
+      - stepId: retrievePaymentPlan
+        description: Retrieve the finalized payment plan after loan authorization.
+        operationId: $sourceDescriptions.BnplLoanApi.retrieveBnplLoanTransaction
+        parameters:
+          - name: loanTransactionId
+            in: path
+            value: $steps.initiateBnplTransaction.outputs.loanTransactionId
+        successCriteria:
+          - condition: $statusCode == 200
+        outputs:
+          finalizedPaymentPlan: $response.body
+      - stepId: updateOrderStatus
+        description: Update the order status to "Completed" once the loan transaction is finalized.
+        operationId: $sourceDescriptions.BnplLoanApi.updateBnplLoanTransactionStatus
+        parameters:
+          - name: loanTransactionId
+            in: path
+            value: $steps.initiateBnplTransaction.outputs.loanTransactionId
+        requestBody:
+          contentType: application/json
+          payload: |
+            { 
+              "status": "Completed" 
+            }
+        successCriteria:
+          - condition: $statusCode == 204
+    outputs:
+      finalizedPaymentPlan: $steps.retrievePaymentPlan.outputs.finalizedPaymentPlan
