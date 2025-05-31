@@ -1,0 +1,47 @@
+[project]
+name = "agentic_governance"
+version = "0.0.1"
+authors = [
+    { name = "Seshu Tirupati", email = "seshutir@ie.ibm.com" },
+    { name = "Dhaval Salwala", email = "dhaval.vinodbhai.salwala@ibm.com" },
+    { name = "Inge Vejsbjerg", email = "ingevejs@ie.ibm.com" },
+    { name = "Elizabeth Daly", email = "elizabeth.daly@ie.ibm.com" },
+]
+description = "An Agentic AI framework that can effectively detect and manage risks associated with LLMs for a given use-case."
+readme = "README.md"
+requires-python = ">=3.11, <3.12"
+classifiers = [
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Agentic AI framework for LLM governance",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "langchain",
+    "langgraph",
+    "pydantic_settings",
+    "typer",
+    "langgraph-cli[inmem]",
+    "python-dotenv",
+    "deepeval",
+    "openai",
+    "isort",
+    "pre-commit",
+]
+
+[project.optional-dependencies]
+ollama = ["ollama"]
+wml = ["ibm-watsonx-ai"]
+vllm = ["vllm", "xgrammar"]
+
+[tool.setuptools]
+packages = ["agentic_governance"]
+
+[tool.isort]
+profile = "black"
+line_length = 88
+remove_redundant_aliases = true
+group_by_package = true
+combine_star = true
+lines_after_imports = 2

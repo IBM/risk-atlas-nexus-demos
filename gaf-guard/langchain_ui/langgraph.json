@@ -1,0 +1,10 @@
+{
+  "dependencies": [
+    "."
+  ],
+  "graphs": {
+    "risk_assessment": "langchain_ui/main.py:risk_assessment_graph",
+    "drift_monitoring": "langchain_ui/main.py:drift_monitoring_graph"
+  },
+  "env": ".env"
+}
