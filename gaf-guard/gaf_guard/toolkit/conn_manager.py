@@ -1,8 +1,12 @@
-from typing import Literal, Union, Dict
 import json
-from agentic_governance.toolkit.logging import configure_logger
+from pathlib import Path
+from typing import Any, Dict, Union
+
 from websockets.exceptions import ConnectionClosedOK
-from agentic_governance.toolkit.enums import MessageType
+
+from gaf_guard.toolkit.enums import MessageType, Role
+from gaf_guard.toolkit.logging import configure_logger
+
 
 logger = configure_logger(__name__)
 
@@ -29,28 +33,23 @@ class WebSocketConnectionManager:
 
     async def send(
         self,
-        body: Union[None, str] = None,
-        message_type: Literal[MessageType.RULE, MessageType.PRINT] = MessageType.PRINT,
+        body: Union[None, Any] = None,
+        message_type: MessageType = MessageType.PRINT,
         **kwargs,
     ):
         await self.get_websocket(list(self.active_connections.keys())[0]).send(
-            json.dumps({"message_type": message_type, "body": body} | kwargs)
+            json.dumps({"body": body, "message_type": message_type} | kwargs)
         )
 
-    async def log(
-        self,
-        body: Dict,
-        workflow_step: str,
-        **kwargs,
-    ):
-        if hasattr(body, "get") and body.get("log", None):
-            await self.send(body["log"], workflow_step=workflow_step, **kwargs)
+    async def log_benchmark(self, data: Any, step: str, role: str, trial_file: str):
+        if data:
+            if Path(trial_file).exists():
+                trial_data = json.loads(Path(trial_file).read_text())
+                trial_data.append({"task": step, "role": role, "content": data})
+            else:
+                trial_data = [{"task": step, "role": role, "content": data}]
 
-    async def completed(
-        self,
-        client_id: str,
-    ):
-        await self.send(message_type=MessageType.COMPLETED)
+            json.dump(trial_data, open(trial_file, "w"), indent=4)
 
     def disconnect(self, client_id):
         del self.active_connections[client_id]

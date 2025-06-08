@@ -1,5 +1,5 @@
 [project]
-name = "agentic_governance"
+name = "gaf_guard"
 version = "0.0.1"
 authors = [
     { name = "Seshu Tirupati", email = "seshutir@ie.ibm.com" },
@@ -7,17 +7,28 @@ authors = [
     { name = "Inge Vejsbjerg", email = "ingevejs@ie.ibm.com" },
     { name = "Elizabeth Daly", email = "elizabeth.daly@ie.ibm.com" },
 ]
+keywords = [
+    "agentic ai governance",
+    "ai risk monitoring",
+    "risk evaluation",
+    "human in the loop",
+]
 description = "An Agentic AI framework that can effectively detect and manage risks associated with LLMs for a given use-case."
 readme = "README.md"
 requires-python = ">=3.11, <3.12"
 classifiers = [
     "Intended Audience :: Developers",
-    "Topic :: Software Development :: Agentic AI framework for LLM governance",
+    "Intended Audience :: Science/Research",
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+    "Topic :: Software Development",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Microsoft :: Windows",
 ]
 dependencies = [
+    "risk-atlas-nexus",
     "langchain",
     "langgraph",
     "pydantic_settings",
@@ -26,6 +37,7 @@ dependencies = [
     "python-dotenv",
     "deepeval",
     "openai",
+    "prettytable",
     "isort",
     "pre-commit",
 ]
@@ -36,7 +48,7 @@ wml = ["ibm-watsonx-ai"]
 vllm = ["vllm", "xgrammar"]
 
 [tool.setuptools]
-packages = ["agentic_governance"]
+packages = ["gaf_guard"]
 
 [tool.isort]
 profile = "black"
@@ -45,3 +57,7 @@ remove_redundant_aliases = true
 group_by_package = true
 combine_star = true
 lines_after_imports = 2
+
+[project.urls]
+Homepage = "https://github.com/IBM/risk-atlas-nexus-demos/tree/main/gaf-guard"
+Documentation = "https://github.com/IBM/risk-atlas-nexus-demos/tree/main/gaf-guard"

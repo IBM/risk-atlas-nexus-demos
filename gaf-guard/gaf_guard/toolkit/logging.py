@@ -1,4 +1,5 @@
 import logging
+
 import logzero
 
 
@@ -15,7 +16,7 @@ def configure_logger(
     logging_level = logging.getLevelNamesMapping()[logging_level.upper()]
 
     log_format = (
-        "%(color)s[%(asctime)s:%(msecs)d] - %(levelname)s - Agentic Governance - "
+        "%(color)s[%(asctime)s:%(msecs)d] - %(levelname)s - GAF Guard - "
         "%(end_color)s%(message)s"
     )
 

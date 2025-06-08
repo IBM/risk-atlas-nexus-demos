@@ -3,7 +3,7 @@ inference_engine:
     class: OllamaInferenceEngine
     model_name_or_path: llama3.2
     credentials:
-      api_url: localhost:11434
+      api_url: OLLAMA_API_URL
     parameters:
       num_predict: 1000
       num_ctx: 8192
@@ -14,7 +14,7 @@ inference_engine:
     class: OllamaInferenceEngine
     model_name_or_path: granite3-guardian:2b
     credentials:
-      api_url: localhost:11434
+      api_url: OLLAMA_API_URL
     parameters:
       num_predict: 1000
       num_ctx: 8192
@@ -25,7 +25,7 @@ inference_engine:
     class: OllamaInferenceEngine
     model_name_or_path: granite3.2:8b
     credentials:
-      api_url: localhost:11434
+      api_url: OLLAMA_API_URL
     parameters:
       num_predict: 1000
       num_ctx: 8192
@@ -41,12 +41,12 @@ agents:
       inference_engine: *ollama_granite
   RisksAssessmentAgent:
       inference_engine: *ollama_guardian
-  DriftMonitorAgent:
+  DriftMonitoringAgent:
       inference_engine: *ollama_llama
 
 run_configs:
   thread_id: 1
   drift_threshold: 2
-  risk_questionnaire_cot: agentic_governance/data/risk_questionnaire_cot.json
-  risk_generation_cot: agentic_governance/data/risk_generation_cot.json
-  drift_monitoring_cot: agentic_governance/data/drift_monitoring_cot.json
+  risk_questionnaire_cot: gaf_guard/data/risk_questionnaire_cot.json
+  risk_generation_cot: gaf_guard/data/risk_generation_cot.json
+  drift_monitoring_cot: gaf_guard/data/drift_monitoring_cot.json
