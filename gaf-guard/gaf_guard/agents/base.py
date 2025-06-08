@@ -1,8 +1,10 @@
 from abc import ABC
 from typing import Dict
+
 from langgraph.graph import StateGraph
 from langgraph.graph.state import CompiledStateGraph
-from agentic_governance.toolkit.decorators import hline
+
+from gaf_guard.toolkit.decorators import hline
 
 
 class Agent(ABC):
