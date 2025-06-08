@@ -1,6 +1,7 @@
 import json
 import operator
 import os
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Annotated, Any, Dict, List, Optional
 
@@ -11,12 +12,17 @@ from rich.console import Console
 from risk_atlas_nexus.blocks.inference import InferenceEngine
 from risk_atlas_nexus.library import RiskAtlasNexus
 
-from agentic_governance.agents import Agent
-from agentic_governance.toolkit.decorators import async_partial, hline, step_logging
-from agentic_governance.toolkit.tmp_utils import workflow_table_2
+from gaf_guard.agents import Agent
+from gaf_guard.toolkit.decorators import async_partial, config, step_logging
 
 
 console = Console()
+
+
+# Config schema
+@dataclass(kw_only=True)
+class RiskAssessmentConfig:
+    trial_file: Optional[str] = None
 
 
 # Graph state
@@ -26,21 +32,9 @@ class RiskAssessmentState(BaseModel):
 
 
 # Node
-@step_logging("Input Prompt")
-async def input_prompt(state: RiskAssessmentState) -> Dict[str, Any]:
-    return {
-        "identified_risks": None,
-        "log": {
-            "message": "[bold blue]Prompt:[/bold blue] {data}",
-            "data": state.prompt,
-        },
-    }
-
-
-# Node
 @step_logging(step="Risk Assessment", at="begin")
 async def start_assessing_for_risks(state: RiskAssessmentState):
-    return {"identified_risks": None}
+    return {}
 
 
 # Node
@@ -71,8 +65,12 @@ async def assess_risk(
 
 
 # Node
-@step_logging(step="Incident Reporting", at="both")
-async def aggregate_and_report_incident(state: RiskAssessmentState):
+@config(config_class=RiskAssessmentConfig)
+@step_logging(step="Incident Reporting", at="both", benchmark="risk_report")
+async def aggregate_and_report_incident(
+    state: RiskAssessmentState,
+    config: RiskAssessmentConfig,
+):
     risk_report_yes = None
     if state.risk_report:
         risk_report_yes = dict(
@@ -86,7 +84,7 @@ async def aggregate_and_report_incident(state: RiskAssessmentState):
             "[bold green]No risks identified with the prompts[/bold green]"
         )
 
-    return {"log": {"message": incident_report, "data": state.risk_report}}
+    return {"log": incident_report, "risk_report": state.risk_report}
 
 
 class RisksAssessmentAgent(Agent):
@@ -98,7 +96,6 @@ class RisksAssessmentAgent(Agent):
     _WORKFLOW_DESC = (
         f"[bold blue]Real-time risk monitoring using the following workflow:"
     )
-    _WORKFLOW_TABLE = workflow_table_2()
 
     def __init__(self):
         super(RisksAssessmentAgent, self).__init__(RiskAssessmentState)
@@ -106,15 +103,13 @@ class RisksAssessmentAgent(Agent):
     def _build_graph(self, graph: StateGraph, inference_engine: InferenceEngine):
 
         # Add nodes and edges
-        graph.add_node("Input Prompt", input_prompt)
         graph.add_node("Start Risk Assessment", start_assessing_for_risks)
         graph.add_node(
             "Aggregate and Report Risk Incidents", aggregate_and_report_incident
         )
         graph.add_node("Stop Risk Assessment", stop_assessing_for_risks)
 
-        graph.add_edge(START, "Input Prompt")
-        graph.add_edge("Input Prompt", "Start Risk Assessment")
+        graph.add_edge(START, "Start Risk Assessment")
         for risk_name in [
             risk.tag
             for risk in RiskAtlasNexus().get_all_risks(taxonomy="ibm-granite-guardian")

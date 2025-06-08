@@ -1,9 +1,13 @@
-from rich.console import Console
-from langchain_core.runnables import RunnableConfig
-from agentic_governance.toolkit.config_utils import from_runnable_config
-from agentic_governance.toolkit.conn_manager import conn_manager
-from typing import Literal, Optional, Dict
 import asyncio
+from typing import Dict, Literal, Optional
+
+from langchain_core.runnables import RunnableConfig
+from rich.console import Console
+
+from gaf_guard.toolkit.config_utils import from_runnable_config
+from gaf_guard.toolkit.conn_manager import conn_manager
+from gaf_guard.toolkit.enums import Role
+
 
 console = Console()
 
@@ -12,6 +16,8 @@ def step_logging(
     step: Optional[str],
     at: Optional[Literal["begin", "end", "both"]] = None,
     step_desc: Optional[str] = None,
+    benchmark: Optional[str] = None,
+    role: Optional[str] = Role.ASSISTANT,
 ):
     def decorator(func):
 
@@ -22,7 +28,11 @@ def step_logging(
                 )
             await conn_manager.send(step_desc)
             event = await func(*args, **kwargs)
-            await conn_manager.log(event, workflow_step=step)
+            if benchmark:
+                await conn_manager.log_benchmark(
+                    event.get(benchmark, None), step, role, kwargs["config"].trial_file
+                )
+            await conn_manager.send(event.get("log", None) if event else None)
             if at in ["end", "both"]:
                 await conn_manager.send(
                     f"[bold blue]Workflow Step: [bold white]{step}[/bold white]....Completed",

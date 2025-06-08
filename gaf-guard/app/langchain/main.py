@@ -1,5 +1,5 @@
 from IPython.display import Image, display
-from agentic_governance.agents import (
+from gaf_guard.agents import (
     RiskGeneratorAgent,
     HumanInTheLoopAgent,
     StreamAgent,

@@ -7,8 +7,7 @@
     {
         "task": "Domain Identification",
         "role": "assistant",
-        "content": "Customer service/support",
-        "input": "\n        I want you to play the role of a compliance officer and answer the question based on the given Intent.\n        Return the question, answer and explanation in a json format where question, answer and explanation are keys of the json exactly as shown in the examples.\n        you should answer the question followed by an explanation on how that answer was generated.\n\n        Intent: {user_intent}\n        Question: What domain does your use request fall under? Customer service/support, Technical, Information retrieval, Strategy, Code/software engineering, Communications, IT/business automation, Writing assistant, Financial, Talent and Organization including HR, Product, Marketing, Cybersecurity, Healthcare, User Research, Sales, Risk and Compliance, Design, Other\n        Answer: Strategy\n        Explanation: Since the task is involved in improving the processes to ensure better performance. It is not finance since the task is on supply chain optimization and not on financial aspects even though the application domain is banks.\n\n        Intent: Ability to create dialog flows and integrations from natural language instructions.\n        Question: What domain does your use request fall under? Customer service/support, Technical, Information retrieval, Strategy, Code/software engineering, Communications, IT/business automation, Writing assistant, Financial, Talent and Organization including HR, Product, Marketing, Cybersecurity, Healthcare, User Research, Sales, Risk and Compliance, Design, Other\n        Answer: Customer service/support\n        Explanation: Since the task relates to human conversations or generating human converstations or support.\n\n        Intent: Check if a document has grammatical mistakes.\n        Question: What domain does your use request fall under? Customer service/support, Technical, Information retrieval, Strategy, Code/software engineering, Communications, IT/business automation, Writing assistant, Financial, Talent and Organization including HR, Product, Marketing, Cybersecurity, Healthcare, User Research, Sales, Risk and Compliance, Design, Other\n        Answer: Writing assitant\n        Explanation: Since this helps in improving the quality of text. It is not customer service since this on on the quality of text rather than helping in human conversations.\n\n        Intent: Optimize supply chain management in Investment banks\n        Question: What domain does your use request fall under? Customer service/support, Technical, Information retrieval, Strategy, Code/software engineering, Communications, IT/business automation, Writing assistant, Financial, Talent and Organization including HR, Product, Marketing, Cybersecurity, Healthcare, User Research, Sales, Risk and Compliance, Design, Other\n        Answer: Strategy\n        Explanation: Since the task is involved in improving the processes to ensure better performance. It is not finance since the task is on supply chain optimization and not on financial aspects even though the application domain is banks.\n\n        Intent: In the context of drug repurposing, generative AI can be employed to analyze vast databases of existing drugs and their clinical trials data. By identifying patterns and similarities, the AI can suggest potential new therapeutic indications for existing drugs, based on the chemical structure and pharmacological properties of the APIs. This process can help streamline the drug development pipeline, as it would reduce the need for time-consuming and expensive clinical trials for new indications. For instance, a drug like Atorvastatin, which is currently used to lower cholesterol, could be repurposed for the treatment of diabetic nephropathy, a kidney disease, based on the AI's analysis of similar drugs and their clinical data. This would not only save resources but also provide new treatment options for patients suffering from this debilitating condition. \n        Question: What domain does your use request fall under? Customer service/support, Technical, Information retrieval, Strategy, Code/software engineering, Communications, IT/business automation, Writing assistant, Financial, Talent and Organization including HR, Product, Marketing, Cybersecurity, Healthcare, User Research, Sales, Risk and Compliance, Design, Other\n        Answer: Healthcare and strategy\n        Explanation: Since the task is related to healthcare and drug repurposing, which involves analyzing data related to drugs and their clinical trials, this falls under the healthcare domain. It also involves Strategy it talks about using patterns to create new treatment options.\n\n        Intent: Generate personalized, relevant responses, recommendations, and summaries of claims for customers to support agents to enhance their interactions with customers.\n        Question: What domain does your use request fall under? Customer service/support, Technical, Information retrieval, Strategy, Code/software engineering, Communications, IT/business automation, Writing assistant, Financial, Talent and Organization including HR, Product, Marketing, Cybersecurity, Healthcare, User Research, Sales, Risk and Compliance, Design, Other"
+        "content": "Customer service/support"
     },
     {
         "task": "Questionnaire Prediction",
@@ -67,6 +66,40 @@
             "Feature Extraction",
             "Token Classification",
             "Translation"
+        ]
+    },
+    {
+        "task": "Gather AI Risks for Human Intervention",
+        "role": "assistant",
+        "content": [
+            "Unexplainable output",
+            "Data poisoning",
+            "Data privacy rights alignment",
+            "IP information in prompt",
+            "Impact on the environment",
+            "Over- or under-reliance",
+            "Improper usage",
+            "Output bias",
+            "Unrepresentative data",
+            "Lack of model transparency",
+            "Incomplete advice"
+        ]
+    },
+    {
+        "task": "Updated AI Risks from Human Response",
+        "role": "assistant",
+        "content": [
+            "Unexplainable output",
+            "Data poisoning",
+            "Data privacy rights alignment",
+            "IP information in prompt",
+            "Impact on the environment",
+            "Over- or under-reliance",
+            "Improper usage",
+            "Output bias",
+            "Unrepresentative data",
+            "Lack of model transparency",
+            "Incomplete advice"
         ]
     },
     {
