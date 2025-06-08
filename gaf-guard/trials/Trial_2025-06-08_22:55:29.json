@@ -43,26 +43,63 @@
         "task": "Risk Generation",
         "role": "assistant",
         "content": [
+            "Prompt injection attack",
+            "Hallucination",
+            "Output bias",
+            "Data privacy rights alignment",
+            "Improper usage",
             "Lack of model transparency",
             "Unrepresentative data",
-            "Incomplete advice",
-            "Output bias",
-            "Hallucination",
-            "Improper usage",
-            "Data privacy rights alignment",
-            "Prompt injection attack"
+            "Incomplete advice"
         ]
     },
     {
         "task": "AI Tasks",
         "role": "assistant",
         "content": [
+            "Text-to-Image",
             "Text Classification",
             "Text Generation",
             "Summarization",
             "Feature Extraction",
+            "Image-to-Text",
+            "Image Segmentation",
+            "Image Feature Extraction",
+            "Image Classification",
+            "Object Detection",
+            "Text-to-Speech",
             "Token Classification",
-            "Translation"
+            "Translation",
+            "Unconditional Image Generation",
+            "Text-to-3D"
+        ]
+    },
+    {
+        "task": "Gather AI Risks for Human Intervention",
+        "role": "assistant",
+        "content": [
+            "Prompt injection attack",
+            "Hallucination",
+            "Output bias",
+            "Data privacy rights alignment",
+            "Improper usage",
+            "Lack of model transparency",
+            "Unrepresentative data",
+            "Incomplete advice"
+        ]
+    },
+    {
+        "task": "Updated AI Risks from Human Response",
+        "role": "assistant",
+        "content": [
+            "Prompt injection attack",
+            "Hallucination",
+            "Output bias",
+            "Data privacy rights alignment",
+            "Improper usage",
+            "Lack of model transparency",
+            "Unrepresentative data",
+            "Incomplete advice"
         ]
     },
     {
@@ -80,6 +117,7 @@
             "groundedness": "Yes",
             "harm": "No",
             "harm-engagement": "No",
+            "jailbreak": "Yes",
             "profanity": "No",
             "relevance": "No",
             "sexual-content": "No",
@@ -113,6 +151,7 @@
             "groundedness": "Yes",
             "harm": "No",
             "harm-engagement": "No",
+            "jailbreak": "Yes",
             "profanity": "No",
             "relevance": "No",
             "sexual-content": "No",
@@ -146,6 +185,7 @@
             "groundedness": "Yes",
             "harm": "No",
             "harm-engagement": "No",
+            "jailbreak": "Yes",
             "profanity": "No",
             "relevance": "No",
             "sexual-content": "No",
@@ -179,6 +219,7 @@
             "groundedness": "Yes",
             "harm": "No",
             "harm-engagement": "No",
+            "jailbreak": "Yes",
             "profanity": "No",
             "relevance": "No",
             "sexual-content": "No",
@@ -212,6 +253,7 @@
             "groundedness": "Yes",
             "harm": "No",
             "harm-engagement": "No",
+            "jailbreak": "No",
             "profanity": "No",
             "relevance": "No",
             "sexual-content": "No",
@@ -245,6 +287,7 @@
             "groundedness": "Yes",
             "harm": "No",
             "harm-engagement": "No",
+            "jailbreak": "Yes",
             "profanity": "No",
             "relevance": "No",
             "sexual-content": "No",
@@ -278,6 +321,7 @@
             "groundedness": "Yes",
             "harm": "No",
             "harm-engagement": "No",
+            "jailbreak": "Yes",
             "profanity": "No",
             "relevance": "No",
             "sexual-content": "No",
@@ -311,6 +355,7 @@
             "groundedness": "Yes",
             "harm": "No",
             "harm-engagement": "No",
+            "jailbreak": "No",
             "profanity": "No",
             "relevance": "No",
             "sexual-content": "No",
@@ -344,6 +389,7 @@
             "groundedness": "Yes",
             "harm": "Yes",
             "harm-engagement": "Yes",
+            "jailbreak": "Yes",
             "profanity": "No",
             "relevance": "Yes",
             "sexual-content": "Yes",

@@ -10,8 +10,11 @@ GAF-Guard is an AI framework that can effectively detect and manage risks associ
 
 ![90a729e8-e95e-4383-a36b-ffc84a81287e](https://github.com/user-attachments/assets/f0546c3d-cf95-49c8-8112-21308bf6f7e6)
 
+## Documentation
 
-## Installation
+See the [**GAF Guard Wiki**](https://github.com/IBM/risk-atlas-nexus-demos/wiki/GAF-Guard) for full documentation, installation guide, operational details and other information.
+
+## Installation and Running the CLI App
 
 This project targets python version ">=3.11, <3.12". You can download specific versions of python here: https://www.python.org/downloads/
 
@@ -23,18 +26,17 @@ This project targets python version ">=3.11, <3.12". You can download specific v
    conda activate gaf-guard
    pip install -e .
    ```
-2. Please follow the instructions at https://github.com/IBM/risk-atlas-nexus#installation to install `Risk Atlas Nexus` library
 
-3. Update the config variables and inference engine params in the server config file. Start your LLM server viz. ollama, vllm. Update LLM server credentials in `cli/server_config.yaml`.
+2. Update the config variables and inference engine params in the server config file. Start your LLM server viz. ollama, vllm. Update LLM server credentials in `app/cli/server_config.yaml`.
 
-   - `nano cli/server_config.yaml`
+   - `nano app/cli/server_config.yaml`
 
-4. Start the GAF-Guard server
+3. Start the GAF-Guard server
 
-   - `python cli/server.py --config-file cli/server_config.yaml --host localhost --port 8000`
+   - `python app/cli/server.py --config-file app/cli/server_config.yaml --host localhost --port 8000`
 
-5. Start the GAF-Guard client
-   - `python cli/client.py --host localhost --port 8000`
+4. Start the GAF-Guard client
+   - `python app/cli/client.py --host localhost --port 8000`
 
 ## License
 

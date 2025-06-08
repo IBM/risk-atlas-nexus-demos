@@ -9,15 +9,15 @@ from rich.panel import Panel
 from rich.progress import Progress
 from risk_atlas_nexus.blocks.inference.params import InferenceEngineCredentials
 
-from agentic_governance.agents import Agent, RiskGeneratorAgent, HumanInTheLoopAgent
-from agentic_governance.toolkit.logging import configure_logger
-from agentic_governance.agents import OrchestratorAgent
+from gaf_guard.agents import Agent, RiskGeneratorAgent, HumanInTheLoopAgent
+from gaf_guard.toolkit.logging import configure_logger
+from gaf_guard.agents import OrchestratorAgent
 
 console = Console()
 logger = configure_logger(__name__)
 
 inference_module = importlib.import_module("risk_atlas_nexus.blocks.inference")
-agent_module = importlib.import_module("agentic_governance.agents")
+agent_module = importlib.import_module("gaf_guard.agents")
 
 
 class AgentBuilder:

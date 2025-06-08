@@ -3,10 +3,11 @@ from dataclasses import dataclass
 from functools import partial
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-from langgraph.graph.state import CompiledStateGraph
+
 from jinja2 import Template
 from langchain_core.runnables.config import RunnableConfig
 from langgraph.graph import END, START, StateGraph
+from langgraph.graph.state import CompiledStateGraph
 from langgraph.types import interrupt
 from pydantic import BaseModel
 from rich.console import Console
@@ -16,10 +17,11 @@ from risk_atlas_nexus.blocks.prompt_response_schema import LIST_OF_STR_SCHEMA
 from risk_atlas_nexus.data import load_resource
 from risk_atlas_nexus.library import RiskAtlasNexus
 
-from agentic_governance.agents import Agent
-from agentic_governance.templates import RISKS_GENERATION_COT_TEMPLATE
-from agentic_governance.toolkit.decorators import config, step_logging
-from agentic_governance.toolkit.tmp_utils import workflow_table
+from gaf_guard.agents import Agent
+from gaf_guard.templates import RISKS_GENERATION_COT_TEMPLATE
+from gaf_guard.toolkit.decorators import config, step_logging
+from gaf_guard.toolkit.enums import MessageType
+from gaf_guard.toolkit.tmp_utils import workflow_table
 
 
 console = Console()
@@ -28,6 +30,7 @@ console = Console()
 # Config schema
 @dataclass(kw_only=True)
 class RiskGenerationConfig:
+    trial_file: Optional[str] = None
     risk_questionnaire_cot: Optional[Dict[str, Any]] = None
     risk_generation_cot: Optional[Dict[str, Any]] = None
 
@@ -43,11 +46,11 @@ class RiskGenerationState(BaseModel):
 
 # Node
 @config(config_class=RiskGenerationConfig)
-@step_logging(step="Domain Identification", at="both")
+@step_logging(step="Domain Identification", at="both", benchmark="domain")
 async def get_usecase_domain(
     inference_engine: InferenceEngine,
     state: RiskGenerationState,
-    config: RunnableConfig,
+    config: RiskGenerationConfig,
 ):
     domain = (
         RiskAtlasNexus()
@@ -59,17 +62,17 @@ async def get_usecase_domain(
 
     return {
         "domain": domain,
-        "log": {
-            "message": "Identified domain from the user_intent: [bold yellow]{data}[/bold yellow]",
-            "data": domain,
-        },
+        "log": f"Identified domain from the user_intent: [bold yellow]{domain}[/bold yellow]",
     }
 
 
 # Node
 @config(config_class=RiskGenerationConfig)
 @step_logging(
-    step="Questionnaire Prediction", at="both", step_desc="Using Zero-shot method."
+    step="Questionnaire Prediction",
+    at="both",
+    step_desc="Using Zero-shot method.",
+    benchmark="risk_questionnaire",
 )
 async def generate_zero_shot(
     inference_engine: InferenceEngine,
@@ -104,6 +107,7 @@ async def generate_zero_shot(
     step="Questionnaire Prediction",
     at="both",
     step_desc="Chain of Thought (CoT) data found, using Few-shot method...",
+    benchmark="risk_questionnaire",
 )
 async def generate_few_shot(
     inference_engine: InferenceEngine,
@@ -134,7 +138,7 @@ async def generate_few_shot(
 
     return {
         "risk_questionnaire": risk_questionnaire_responses,
-        "log": {"data": risk_questionnaire_responses},
+        "log": risk_questionnaire_responses,
     }
 
 
@@ -165,7 +169,11 @@ async def is_cot_data_present(state: RiskGenerationState, config: RiskGeneration
 
 # Node
 @config(config_class=RiskGenerationConfig)
-@step_logging(step="Risk Generation", at="both")
+@step_logging(
+    step="Risk Generation",
+    at="both",
+    benchmark="identified_risks",
+)
 async def identify_risks(
     inference_engine: InferenceEngine,
     state: RiskGenerationState,
@@ -209,17 +217,19 @@ async def identify_risks(
     for response in inference_response:
         identified_risks.extend(response.prediction["answer"])
 
-    # response = await hitl_agent.ainvoke({"identified_risks": identified_risks})
-
     # Get unique risk labels.
     identified_risks = list(set(identified_risks))
 
-    return {"identified_risks": identified_risks, "log": {"data": identified_risks}}
+    return {"identified_risks": identified_risks, "log": identified_risks}
 
 
 # Node
 @config(config_class=RiskGenerationConfig)
-@step_logging(step="AI Tasks", at="both")
+@step_logging(
+    step="AI Tasks",
+    at="both",
+    benchmark="identified_ai_tasks",
+)
 async def identify_ai_tasks(
     inference_engine: InferenceEngine,
     state: RiskGenerationState,
@@ -229,10 +239,7 @@ async def identify_ai_tasks(
         [state.user_intent], inference_engine
     )[0]
 
-    return {
-        "identified_ai_tasks": ai_tasks.prediction,
-        "log": {"data": ai_tasks.prediction},
-    }
+    return {"identified_ai_tasks": ai_tasks.prediction, "log": ai_tasks.prediction}
 
 
 # Node

@@ -1,22 +1,24 @@
-from dataclasses import dataclass
-from functools import partial
-from typing import Dict, List, Optional, Any
 import json
 import os
+from dataclasses import dataclass
+from functools import partial
 from pathlib import Path
+from typing import Any, Dict, List, Optional
+
 from jinja2 import Template
 from langgraph.graph import END, START, StateGraph
 from pydantic import BaseModel, Field
 from risk_atlas_nexus.blocks.inference import InferenceEngine
 
-from agentic_governance.agents import Agent
-from agentic_governance.templates import DRIFT_COT_TEMPLATE
-from agentic_governance.toolkit.decorators import config, step_logging
+from gaf_guard.agents import Agent
+from gaf_guard.templates import DRIFT_COT_TEMPLATE
+from gaf_guard.toolkit.decorators import config, step_logging
 
 
 # Config schema
 @dataclass(kw_only=True)
 class DriftMonitoringConfig:
+    trial_file: Optional[str] = None
     drift_threshold: int
     drift_monitoring_cot: Optional[Dict[str, str]]
 
@@ -27,14 +29,6 @@ class DriftMonitoringState(BaseModel):
     prompt: str
     drift_value: int = 0
     incident_message: Optional[str] = None
-
-
-class DriftMonitoringOutputState(BaseModel):
-    answer: str = Field(description="answer")
-    question: str = Field(description="The question on prompt relevance")
-    explanation: int = Field(
-        description="Explanations for why the prompt is relevant or not relevant"
-    )
 
 
 # Nodes
@@ -53,7 +47,7 @@ async def drift_monitoring_setup(
 
 # Nodes
 @config(config_class=DriftMonitoringConfig)
-@step_logging(step="Drift Monitoring", at="both")
+@step_logging(step="Drift Monitoring", at="both", benchmark="log")
 async def check_prompt_relevance(
     inference_engine: InferenceEngine,
     state: DriftMonitoringState,
@@ -89,7 +83,7 @@ async def check_prompt_relevance(
 
 # Nodes
 @config(config_class=DriftMonitoringConfig)
-@step_logging(step="Drift Reporting", at="both")
+@step_logging(step="Drift Reporting", at="both", benchmark="incident_message")
 async def drift_incident_reporting(
     state: DriftMonitoringState,
     config: DriftMonitoringConfig,
