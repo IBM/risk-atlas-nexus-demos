@@ -30,15 +30,17 @@ If you wish to add a demonstration project:
 Note that all contributions to this project are [released][released] to the public under the project's [opensource license](https://github.com/IBM/risk-atlas-nexus-demos/blob/main/LICENSE).
 
 
+## Demonstration list
+
+| Name| Tags | Description|
+| :--- |  :--- | :--- |
+| [Gaf-Guard](https://github.com/IBM/risk-atlas-nexus-demos/tree/main/gaf-guard) | risk management, AI agents, | GAF-Guard is an AI framework that can effectively detect and manage risks associated with LLMs for a given use-case.|
+| [Neo4j-Db ](https://github.com/IBM/risk-atlas-nexus-demos/tree/main/neo4j-db) |neo4j, Docker | Set up a docker container with an instance of neo4j community and import the data from Risk Atlas Nexus into it. |
+
+
 ## License
 Risk Atlas Nexus Demos is under Apache 2.0 license.
 
-```text
-#
-# Copyright IBM Corp. {Year project was created} - {Current Year}
-# SPDX-License-Identifier: Apache-2.0
-#
-```
 
 [View the detailed LICENSE](LICENSE).
 
