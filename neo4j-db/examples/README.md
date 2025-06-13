@@ -1,5 +1,4 @@
 # Exported data from Risk atlas nexus
-
-This can be updated by running make regenerate_cypher_code 
+Data export from 13 June 2025. This can be updated by running make regenerate_cypher_code in the Risk Atlas Nexus repo.
 
 
