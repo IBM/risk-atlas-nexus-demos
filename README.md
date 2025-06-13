@@ -36,7 +36,6 @@ Note that all contributions to this project are [released][released] to the publ
 | :--- |  :--- | :--- |
 | [Gaf-Guard](https://github.com/IBM/risk-atlas-nexus-demos/tree/main/gaf-guard) | risk management, AI agents, | GAF-Guard is an AI framework that can effectively detect and manage risks associated with LLMs for a given use-case.|
 | [Neo4j-Db ](https://github.com/IBM/risk-atlas-nexus-demos/tree/main/neo4j-db) |neo4j, Docker | Set up a docker container with an instance of neo4j community and import the data from Risk Atlas Nexus into it. |
-| [Age-Db ](https://github.com/IBM/risk-atlas-nexus-demos/tree/main/age-db) |cypher, Apache AGE | Example implementation of how to ingest risk atlas nexus content into an Apache Age database and query it |
 
 
 ## License

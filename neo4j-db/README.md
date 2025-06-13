@@ -3,7 +3,7 @@
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-yellow.svg)](https://www.apache.org/licenses/LICENSE-2.0) [![](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/) <img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 
 ## Overview
-Ingest data from Risk Atlas Nexus into an Neo4j database
+A quick way to ingest data from Risk Atlas Nexus into an Neo4j database, using the exported cypher queries. 
 
 ## 1 Get started
 ### 1.1 Set up Neo4j
@@ -25,6 +25,13 @@ docker run --rm --name <containerID/name> --volume /<your_own_path>/risk-atlas-n
 --env NEO4J_AUTH=neo4j/<your_own_password> \ 
 neo4j:2025.05.0
 ```
+
+
+Hints: check your container statuses
+```
+docker ps -a 
+```
+
 
 ## 2. Populate the db
 ### 1.2 exec into the container
@@ -52,9 +59,27 @@ You can connect with the http://localhost:7474/browser/.  In the browser you can
 CALL db.schema.visualization()
 ```
 
-## Hints
-Check your container statuses
+![A screenshot of the graph shown by neo4j visualisation ](images/screenshot.png)
+
+### 3.2 Full text search
+
+Create an index to search, in this case let's just use the risk titles
 ```
-docker ps -a 
+CREATE FULLTEXT INDEX riskNameIndex FOR (r:Risk) ON EACH [r.name]
 ```
 
+Do a search:
+```
+CALL db.index.fulltext.queryNodes("riskNameIndex", "name:violence") 
+YIELD node, score
+RETURN node.name as name, score
+```
+```
+╒════════════════════════════════════════════════════════╤══════════════════╕
+│name                                                    │score             │
+╞════════════════════════════════════════════════════════╪══════════════════╡
+│"Violence"                                              │3.501601457595825 │
+├────────────────────────────────────────────────────────┼──────────────────┤
+│"Glorifying violence, abuse, or the suffering of others"│1.7435641288757324│
+└────────────────────────────────────────────────────────┴──────────────────┘
+```
