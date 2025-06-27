@@ -6,6 +6,9 @@
 
 GAF-Guard is an AI framework that can effectively detect and manage risks associated with LLMs for a given use-case. The framework leverages agents to identify risks tailored to a specific use case, generate drift and risk monitors, and establish real-time monitoring functions for LLMs. By integrating these capabilities, our approach aims to provide a comprehensive risk management framework that addresses the unique requirements of each LLM application.
 
+A quick overview of the motivation and demonstration of the framework is here:  
+https://www.youtube.com/watch?v=M4JSkdFg6I0
+
 ## Architecture
 
 ![90a729e8-e95e-4383-a36b-ffc84a81287e](https://github.com/user-attachments/assets/f0546c3d-cf95-49c8-8112-21308bf6f7e6)
