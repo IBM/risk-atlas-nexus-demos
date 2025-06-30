@@ -1,26 +1,15 @@
-import json
-import os
-from dataclasses import dataclass
 from functools import partial
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Optional
 
 from jinja2 import Template
+from langchain_core.runnables.config import RunnableConfig
 from langgraph.graph import END, START, StateGraph
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from risk_atlas_nexus.blocks.inference import InferenceEngine
 
 from gaf_guard.agents import Agent
 from gaf_guard.templates import DRIFT_COT_TEMPLATE
-from gaf_guard.toolkit.decorators import config, step_logging
-
-
-# Config schema
-@dataclass(kw_only=True)
-class DriftMonitoringConfig:
-    trial_file: Optional[str] = None
-    drift_threshold: int
-    drift_monitoring_cot: Optional[Dict[str, str]]
+from gaf_guard.toolkit.decorators import step_logging
 
 
 # Graph state
@@ -32,29 +21,27 @@ class DriftMonitoringState(BaseModel):
 
 
 # Nodes
-@config(config_class=DriftMonitoringConfig)
 @step_logging(
     step="Drift Monitoring Setup", at="both", step_desc="Setting Initial Values:"
 )
-async def drift_monitoring_setup(
-    state: DriftMonitoringState, config: DriftMonitoringConfig
-):
+def drift_monitoring_setup(state: DriftMonitoringState, config: RunnableConfig):
     return {
         "drift_value": state.drift_value,
-        "log": f"[bold yellow]Drift value:[/bold yellow] {state.drift_value}, [bold yellow]Drift threshold:[/bold yellow] {config.drift_threshold}",
+        "log": f"[bold yellow]Drift value:[/bold yellow] {state.drift_value}, [bold yellow]Drift threshold:[/bold yellow] {config['configurable']['drift_threshold']}",
     }
 
 
 # Nodes
-@config(config_class=DriftMonitoringConfig)
 @step_logging(step="Drift Monitoring", at="both", benchmark="log")
-async def check_prompt_relevance(
+def check_prompt_relevance(
     inference_engine: InferenceEngine,
     state: DriftMonitoringState,
-    config: DriftMonitoringConfig,
+    config: RunnableConfig,
 ):
     prompt_str = Template(DRIFT_COT_TEMPLATE).render(
-        prompt=state.prompt, examples=config.drift_monitoring_cot, domain=state.domain
+        prompt=state.prompt,
+        examples=config["configurable"]["drift_monitoring_cot"],
+        domain=state.domain,
     )
 
     response = inference_engine.chat(
@@ -77,18 +64,14 @@ async def check_prompt_relevance(
 
     return {
         "drift_value": state.drift_value,
-        "log": f"Drift Value: {state.drift_value} (Threshold: {config.drift_threshold})",
+        "log": f"Drift Value: {state.drift_value} (Threshold: {config['configurable']['drift_threshold']})",
     }
 
 
 # Nodes
-@config(config_class=DriftMonitoringConfig)
 @step_logging(step="Drift Reporting", at="both", benchmark="incident_message")
-async def drift_incident_reporting(
-    state: DriftMonitoringState,
-    config: DriftMonitoringConfig,
-):
-    if state.drift_value > config.drift_threshold:
+def drift_incident_reporting(state: DriftMonitoringState, config: RunnableConfig):
+    if state.drift_value > config["configurable"]["drift_threshold"]:
         incident_message = (
             f"[bold red]Alert: Potential drift in prompts identified.[/bold red]"
         )
@@ -106,9 +89,7 @@ class DriftMonitoringAgent(Agent):
     _WORKFLOW_NAME = "Drift Monitoring Agent"
 
     def __init__(self):
-        super(DriftMonitoringAgent, self).__init__(
-            DriftMonitoringState, DriftMonitoringConfig
-        )
+        super(DriftMonitoringAgent, self).__init__(DriftMonitoringState)
 
     def _build_graph(self, graph: StateGraph, inference_engine: InferenceEngine):
 

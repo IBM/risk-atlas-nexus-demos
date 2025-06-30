@@ -1,5 +1,4 @@
 import json
-from dataclasses import dataclass
 from functools import partial
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -7,8 +6,6 @@ from typing import Any, Dict, List, Optional
 from jinja2 import Template
 from langchain_core.runnables.config import RunnableConfig
 from langgraph.graph import END, START, StateGraph
-from langgraph.graph.state import CompiledStateGraph
-from langgraph.types import interrupt
 from pydantic import BaseModel
 from rich.console import Console
 from risk_atlas_nexus.ai_risk_ontology.datamodel.ai_risk_ontology import Risk
@@ -19,20 +16,11 @@ from risk_atlas_nexus.library import RiskAtlasNexus
 
 from gaf_guard.agents import Agent
 from gaf_guard.templates import RISKS_GENERATION_COT_TEMPLATE
-from gaf_guard.toolkit.decorators import config, step_logging
-from gaf_guard.toolkit.enums import MessageType
-from gaf_guard.toolkit.tmp_utils import workflow_table
+from gaf_guard.toolkit.decorators import step_logging
 
 
 console = Console()
-
-
-# Config schema
-@dataclass(kw_only=True)
-class RiskGenerationConfig:
-    trial_file: Optional[str] = None
-    risk_questionnaire_cot: Optional[Dict[str, Any]] = None
-    risk_generation_cot: Optional[Dict[str, Any]] = None
+risk_atlas_nexus = RiskAtlasNexus()
 
 
 # Graph state
@@ -45,20 +33,15 @@ class RiskGenerationState(BaseModel):
 
 
 # Node
-@config(config_class=RiskGenerationConfig)
 @step_logging(step="Domain Identification", at="both", benchmark="domain")
-async def get_usecase_domain(
+def get_usecase_domain(
     inference_engine: InferenceEngine,
     state: RiskGenerationState,
-    config: RiskGenerationConfig,
+    config: RunnableConfig,
 ):
-    domain = (
-        RiskAtlasNexus()
-        .identify_domain_from_usecases(
-            [state.user_intent], inference_engine, verbose=False
-        )[0]
-        .prediction["answer"]
-    )
+    domain = risk_atlas_nexus.identify_domain_from_usecases(
+        [state.user_intent], inference_engine, verbose=False
+    )[0].prediction["answer"]
 
     return {
         "domain": domain,
@@ -67,26 +50,25 @@ async def get_usecase_domain(
 
 
 # Node
-@config(config_class=RiskGenerationConfig)
 @step_logging(
     step="Questionnaire Prediction",
-    at="both",
-    step_desc="Using Zero-shot method.",
-    benchmark="risk_questionnaire",
 )
-async def generate_zero_shot(
+def generate_zero_shot(
     inference_engine: InferenceEngine,
     state: RiskGenerationState,
-    config: RiskGenerationConfig,
+    config: RunnableConfig,
 ):
     # load CoT examples for risk questionnaire
-    if not config.risk_questionnaire_cot:
+    if not config["configurable"]["risk_questionnaire_cot"]:
         risk_questionnaire = load_resource("risk_questionnaire_cot.json")
     else:
-        risk_questionnaire = config.risk_questionnaire_cot
+        risk_questionnaire = config["configurable"]["risk_questionnaire_cot"]
 
-    responses = RiskAtlasNexus().generate_zero_shot_risk_questionnaire_output(
-        state.user_intent, risk_questionnaire, inference_engine
+    responses = risk_atlas_nexus.generate_zero_shot_risk_questionnaire_output(
+        state.user_intent,
+        risk_questionnaire,
+        inference_engine,
+        verbose=False,
     )
 
     risk_questionnaire = []
@@ -102,25 +84,24 @@ async def generate_zero_shot(
 
 
 # Node
-@config(config_class=RiskGenerationConfig)
 @step_logging(
     step="Questionnaire Prediction",
     at="both",
     step_desc="Chain of Thought (CoT) data found, using Few-shot method...",
     benchmark="risk_questionnaire",
 )
-async def generate_few_shot(
+def generate_few_shot(
     inference_engine: InferenceEngine,
     state: RiskGenerationState,
-    config: RiskGenerationConfig,
+    config: RunnableConfig,
 ):
     # load CoT examples for risk questionnaire
-    if not config.risk_questionnaire_cot:
+    if not config["configurable"]["risk_questionnaire_cot"]:
         risk_questionnaire = load_resource("risk_questionnaire_cot.json")
     else:
-        risk_questionnaire = config.risk_questionnaire_cot
+        risk_questionnaire = config["configurable"]["risk_questionnaire_cot"]
 
-    responses = RiskAtlasNexus().generate_few_shot_risk_questionnaire_output(
+    responses = risk_atlas_nexus.generate_few_shot_risk_questionnaire_output(
         state.user_intent,
         risk_questionnaire[1:],
         inference_engine,
@@ -143,13 +124,12 @@ async def generate_few_shot(
 
 
 # Node
-@config(config_class=RiskGenerationConfig)
-async def is_cot_data_present(state: RiskGenerationState, config: RiskGenerationConfig):
-    if not config.risk_questionnaire_cot or (
+def is_cot_data_present(state: RiskGenerationState, config: RunnableConfig):
+    if not config["configurable"]["risk_questionnaire_cot"] or (
         not all(
             [
                 "cot_examples" in question_data
-                for question_data in config.risk_questionnaire_cot
+                for question_data in config["configurable"]["risk_questionnaire_cot"]
             ]
         )
     ):
@@ -159,7 +139,7 @@ async def is_cot_data_present(state: RiskGenerationState, config: RiskGeneration
     elif all(
         [
             len(question_data["cot_examples"]) > 0
-            for question_data in config.risk_questionnaire_cot
+            for question_data in config["configurable"]["risk_questionnaire_cot"]
         ]
     ):
         return True
@@ -168,24 +148,19 @@ async def is_cot_data_present(state: RiskGenerationState, config: RiskGeneration
 
 
 # Node
-@config(config_class=RiskGenerationConfig)
-@step_logging(
-    step="Risk Generation",
-    at="both",
-    benchmark="identified_risks",
-)
-async def identify_risks(
+@step_logging(step="Risk Generation", at="both", benchmark="identified_risks")
+def identify_risks(
     inference_engine: InferenceEngine,
     state: RiskGenerationState,
-    config: RiskGenerationConfig,
+    config: RunnableConfig,
 ):
-    risks: List[Risk] = RiskAtlasNexus().get_all_risks(taxonomy="ibm-risk-atlas")
+    risks: List[Risk] = risk_atlas_nexus.get_all_risks(taxonomy="ibm-risk-atlas")
     prompts = [
         Template(RISKS_GENERATION_COT_TEMPLATE).render(
             usecase=state.user_intent,
             question=risk_question_data["question"],
             answer=risk_question_data["answer"],
-            examples=config.risk_generation_cot,
+            examples=config["configurable"]["risk_generation_cot"],
             risks=json.dumps(
                 [
                     {"category": risk.name, "description": risk.description}
@@ -224,28 +199,22 @@ async def identify_risks(
 
 
 # Node
-@config(config_class=RiskGenerationConfig)
-@step_logging(
-    step="AI Tasks",
-    at="both",
-    benchmark="identified_ai_tasks",
-)
-async def identify_ai_tasks(
+@step_logging(step="AI Tasks", at="both", benchmark="identified_ai_tasks")
+def identify_ai_tasks(
     inference_engine: InferenceEngine,
     state: RiskGenerationState,
-    config: RiskGenerationConfig,
+    config: RunnableConfig,
 ):
-    ai_tasks = RiskAtlasNexus().identify_ai_tasks_from_usecases(
-        [state.user_intent], inference_engine
+    ai_tasks = risk_atlas_nexus.identify_ai_tasks_from_usecases(
+        [state.user_intent], inference_engine, verbose=False
     )[0]
 
     return {"identified_ai_tasks": ai_tasks.prediction, "log": ai_tasks.prediction}
 
 
 # Node
-@config(config_class=RiskGenerationConfig)
 @step_logging(step="Persisting Results", at="both")
-async def persist_to_memory(state: RiskGenerationState, config: RiskGenerationConfig):
+def persist_to_memory(state: RiskGenerationState, config: RunnableConfig):
     return {"log": "The data has been saved in Memory."}
 
 
@@ -258,12 +227,9 @@ class RiskGeneratorAgent(Agent):
     _WORKFLOW_DESC = (
         f"[bold blue]Gathering information using the following workflow:\n[/bold blue]"
     )
-    _WORKFLOW_TABLE = workflow_table()
 
     def __init__(self):
-        super(RiskGeneratorAgent, self).__init__(
-            RiskGenerationState, RiskGenerationConfig
-        )
+        super(RiskGeneratorAgent, self).__init__(RiskGenerationState, RunnableConfig)
 
     def _build_graph(self, graph: StateGraph, inference_engine: InferenceEngine):
 

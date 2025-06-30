@@ -1,6 +1,10 @@
 import logging
+from typing import Any, Dict, Optional
 
 import logzero
+from langgraph.config import get_stream_writer
+
+from gaf_guard.toolkit.enums import MessageType, Role
 
 
 def configure_logger(
@@ -24,3 +28,46 @@ def configure_logger(
     return logzero.setup_logger(
         name=logger_name, level=logging_level, formatter=formatter, json=json
     )
+
+
+def log_start_operation(operation_name: str):
+    get_stream_writer()(
+        {
+            "log": {
+                "msg_type": MessageType.DATA,
+                "message": f"\n[bold blue]Workflow Step: [bold white]{operation_name}[/bold white]....Started",
+            }
+        }
+    )
+
+
+def log_end_operation(operation_name: str):
+    get_stream_writer()(
+        {
+            "log": {
+                "msg_type": MessageType.DATA,
+                "message": f"[bold blue]Workflow Step: [bold white]{operation_name}[/bold white]....Completed",
+            }
+        }
+    )
+
+
+def log_data(
+    data: Any,
+    message_type: MessageType = MessageType.DATA,
+    message_kwargs: Optional[Dict] = None,
+):
+    get_stream_writer()(
+        {
+            "log": {
+                "msg_type": message_type,
+                "message": data,
+                "message_kwargs": message_kwargs,
+            }
+        }
+    )
+
+
+def log_benchmark_data(data: Any, step: str, role: Role):
+    if data:
+        get_stream_writer()({"benchmark": {"data": data, "step": step, "role": role}})

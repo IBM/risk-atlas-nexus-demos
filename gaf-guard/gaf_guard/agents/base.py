@@ -4,8 +4,6 @@ from typing import Dict
 from langgraph.graph import StateGraph
 from langgraph.graph.state import CompiledStateGraph
 
-from gaf_guard.toolkit.decorators import hline
-
 
 class Agent(ABC):
 
@@ -31,11 +29,11 @@ class Agent(ABC):
     def _build_graph(self, graph: StateGraph, *args, **kwargs):
         raise NotImplementedError
 
-    async def ainvoke(self, state_dict: Dict, config: Dict = None):
-        return await self.workflow.ainvoke(state_dict, config=config)
+    # async def ainvoke(self, state_dict: Dict, config: Dict = None):
+    #     return await self.workflow.ainvoke(state_dict, config=config)
 
-    def invoke_stream(self, state_dict, config):
-        for event in self._workflow.stream(
-            state_dict, config=config, stream_mode="values"
-        ):
-            ...
+    # def invoke_stream(self, state_dict, config):
+    #     for event in self._workflow.stream(
+    #         state_dict, config=config, stream_mode="values"
+    #     ):
+    #         ...
