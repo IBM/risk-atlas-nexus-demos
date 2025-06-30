@@ -6,9 +6,21 @@
 
 GAF-Guard is an AI framework that can effectively detect and manage risks associated with LLMs for a given use-case. The framework leverages agents to identify risks tailored to a specific use case, generate drift and risk monitors, and establish real-time monitoring functions for LLMs. By integrating these capabilities, our approach aims to provide a comprehensive risk management framework that addresses the unique requirements of each LLM application.
 
+## Agent Communication Protocol (ACP)
+
+GAF Guard utilizes the [**ACP**](https://github.com/i-am-bee/acp) protocol to facilitate communication between the GAF Guard Client and Server. Any ACP-compliant client can connect to GAF Guard Server to submit tasks and retrieve outputs. By adopting the ACP protocol, GAF Guard enables seamless integration with otherwise siloed agents, promoting the creation of interoperable agentic systems that support easier collaboration and broader ecosystem connectivity.
+
+For more information on ACP, visit the official [site](https://agentcommunicationprotocol.dev/introduction/welcome) or check out this [blog post](https://www.ibm.com/think/topics/agent-communication-protocol).
+
 ## Architecture
 
 ![90a729e8-e95e-4383-a36b-ffc84a81287e](https://github.com/user-attachments/assets/f0546c3d-cf95-49c8-8112-21308bf6f7e6)
+
+## Risk Atlas Nexus
+
+GAF Guard leverages resources and APIs from **Risk Atlas Nexus** to support key functions such as Risk Taxonomy, Risk Identification, Risk Questionnaire Predictions, Risk Assessment, and other AI Governance tasks. Risk Atlas Nexus serves as a central platform to unify and streamline diverse tools and resources related to the governance of foundation models. 
+
+Check out the official repo of [Risk Atlas Nexus](https://github.com/IBM/risk-atlas-nexus).
 
 ## Documentation
 
