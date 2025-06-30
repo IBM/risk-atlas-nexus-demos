@@ -1,28 +1,20 @@
 import json
-from dataclasses import dataclass
-from pathlib import Path
-from typing import Annotated, Any, Dict, List, Optional
+from typing import List, Optional
 
+from langchain_core.runnables.config import RunnableConfig
+from langgraph.errors import GraphInterrupt
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import StreamWriter, interrupt
 from pydantic import BaseModel
 from rich.console import Console
 from risk_atlas_nexus.blocks.inference import InferenceEngine
-from risk_atlas_nexus.library import RiskAtlasNexus
 
 from gaf_guard.agents import Agent
-from gaf_guard.toolkit.decorators import config, step_logging
-from gaf_guard.toolkit.enums import MessageType
-from gaf_guard.toolkit.tmp_utils import workflow_table_2
+from gaf_guard.toolkit.decorators import step_logging
+from gaf_guard.toolkit.exceptions import HumanInterruptionException
 
 
 console = Console()
-
-
-# Config schema
-@dataclass(kw_only=True)
-class HumanInTheLoopAgentConfig:
-    trial_file: Optional[str] = None
 
 
 # Graph state
@@ -31,27 +23,28 @@ class HumanInTheLoopAgentState(BaseModel):
 
 
 # Node
-@config(config_class=HumanInTheLoopAgentConfig)
 @step_logging("Gather AI Risks for Human Intervention", at="both", benchmark="log")
-async def gather_ai_risks(
-    state: HumanInTheLoopAgentState, config: HumanInTheLoopAgentConfig
-):
+def gather_ai_risks(state: HumanInTheLoopAgentState, config: RunnableConfig):
     return {"log": state.identified_risks}
 
 
 # Node
 @step_logging("Getting Human Response on AI Risks")
-async def get_human_response(state: HumanInTheLoopAgentState):
+def get_human_response(state: HumanInTheLoopAgentState, config: RunnableConfig):
     syntax_error = False
     while True:
-        updated_risks = interrupt(
-            {
-                "message": (
-                    ("\nSyntax Error, Try Again." if syntax_error else "")
-                    + f"\nPlease Accept (Press Enter) or Suggest edits for AI Risks (Type your answer as a python List)"
-                )
-            }
-        )
+        try:
+            updated_risks = interrupt(
+                {
+                    "message": (
+                        ("\nSyntax Error, Try Again." if syntax_error else "")
+                        + f"\nPlease Accept (Press Enter) or Suggest edits for AI Risks (Type your answer as a python List)"
+                    )
+                }
+            )
+        except GraphInterrupt as e:
+            raise HumanInterruptionException(json.dumps(e.args[0][0].value))
+
         try:
             if len(updated_risks["response"]) > 0:
                 updated_risks = json.loads(updated_risks["response"])
@@ -65,11 +58,8 @@ async def get_human_response(state: HumanInTheLoopAgentState):
 
 
 # Node
-@config(config_class=HumanInTheLoopAgentConfig)
 @step_logging("Updated AI Risks from Human Response", at="both", benchmark="log")
-async def updated_ai_risks(
-    state: HumanInTheLoopAgentState, config: HumanInTheLoopAgentConfig
-):
+def updated_ai_risks(state: HumanInTheLoopAgentState, config: RunnableConfig):
     return {"log": state.identified_risks}
 
 
