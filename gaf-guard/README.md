@@ -9,15 +9,15 @@ GAF-Guard is an AI framework that can effectively detect and manage risks associ
 A quick overview of the motivation and demonstration of the framework is here:
 https://www.youtube.com/watch?v=M4JSkdFg6I0
 
+## Architecture
+
+![90a729e8-e95e-4383-a36b-ffc84a81287e](https://github.com/user-attachments/assets/f0546c3d-cf95-49c8-8112-21308bf6f7e6)
+
 ## Agent Communication Protocol (ACP)
 
 GAF Guard utilizes the [**ACP**](https://github.com/i-am-bee/acp) protocol to facilitate communication between the GAF Guard Client and Server. Any ACP-compliant client can connect to GAF Guard Server to submit tasks and retrieve outputs. By adopting the ACP protocol, GAF Guard enables seamless integration with otherwise siloed agents, promoting the creation of interoperable agentic systems that support easier collaboration and broader ecosystem connectivity.
 
 For more information on ACP, visit the official [site](https://agentcommunicationprotocol.dev/introduction/welcome) or check out this [blog post](https://www.ibm.com/think/topics/agent-communication-protocol).
-
-## Architecture
-
-![90a729e8-e95e-4383-a36b-ffc84a81287e](https://github.com/user-attachments/assets/f0546c3d-cf95-49c8-8112-21308bf6f7e6)
 
 ## Risk Atlas Nexus
 
