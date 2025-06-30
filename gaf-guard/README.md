@@ -6,6 +6,9 @@
 
 GAF-Guard is an AI framework that can effectively detect and manage risks associated with LLMs for a given use-case. The framework leverages agents to identify risks tailored to a specific use case, generate drift and risk monitors, and establish real-time monitoring functions for LLMs. By integrating these capabilities, our approach aims to provide a comprehensive risk management framework that addresses the unique requirements of each LLM application.
 
+A quick overview of the motivation and demonstration of the framework is here:
+https://www.youtube.com/watch?v=M4JSkdFg6I0
+
 ## Agent Communication Protocol (ACP)
 
 GAF Guard utilizes the [**ACP**](https://github.com/i-am-bee/acp) protocol to facilitate communication between the GAF Guard Client and Server. Any ACP-compliant client can connect to GAF Guard Server to submit tasks and retrieve outputs. By adopting the ACP protocol, GAF Guard enables seamless integration with otherwise siloed agents, promoting the creation of interoperable agentic systems that support easier collaboration and broader ecosystem connectivity.
