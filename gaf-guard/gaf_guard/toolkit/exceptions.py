@@ -1,0 +1,2 @@
+class HumanInterruptionException(Exception):
+    pass

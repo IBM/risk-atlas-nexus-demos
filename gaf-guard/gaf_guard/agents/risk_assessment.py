@@ -1,10 +1,8 @@
-import json
 import operator
-import os
-from dataclasses import dataclass
-from pathlib import Path
+from functools import partial
 from typing import Annotated, Any, Dict, List, Optional
 
+from langchain_core.runnables.config import RunnableConfig
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import StreamWriter
 from pydantic import BaseModel
@@ -13,16 +11,11 @@ from risk_atlas_nexus.blocks.inference import InferenceEngine
 from risk_atlas_nexus.library import RiskAtlasNexus
 
 from gaf_guard.agents import Agent
-from gaf_guard.toolkit.decorators import async_partial, config, step_logging
+from gaf_guard.toolkit.decorators import step_logging
 
 
 console = Console()
-
-
-# Config schema
-@dataclass(kw_only=True)
-class RiskAssessmentConfig:
-    trial_file: Optional[str] = None
+risk_atlas_nexus = RiskAtlasNexus()
 
 
 # Graph state
@@ -33,20 +26,23 @@ class RiskAssessmentState(BaseModel):
 
 # Node
 @step_logging(step="Risk Assessment", at="begin")
-async def start_assessing_for_risks(state: RiskAssessmentState):
+def start_assessing_for_risks(state: RiskAssessmentState, config: RunnableConfig):
     return {}
 
 
 # Node
 @step_logging(step="Risk Assessment", at="end")
-async def stop_assessing_for_risks(state: RiskAssessmentState):
+def stop_assessing_for_risks(state: RiskAssessmentState, config: RunnableConfig):
     return {}
 
 
 # Node
 @step_logging("Assess Risk")
-async def assess_risk(
-    risk_name, inference_engine: InferenceEngine, state: RiskAssessmentState
+def assess_risk(
+    risk_name,
+    inference_engine: InferenceEngine,
+    state: RiskAssessmentState,
+    config: RunnableConfig,
 ):
     response = inference_engine.chat(
         messages=[
@@ -65,12 +61,8 @@ async def assess_risk(
 
 
 # Node
-@config(config_class=RiskAssessmentConfig)
 @step_logging(step="Incident Reporting", at="both", benchmark="risk_report")
-async def aggregate_and_report_incident(
-    state: RiskAssessmentState,
-    config: RiskAssessmentConfig,
-):
+def aggregate_and_report_incident(state: RiskAssessmentState, config: RunnableConfig):
     risk_report_yes = None
     if state.risk_report:
         risk_report_yes = dict(
@@ -112,11 +104,11 @@ class RisksAssessmentAgent(Agent):
         graph.add_edge(START, "Start Risk Assessment")
         for risk_name in [
             risk.tag
-            for risk in RiskAtlasNexus().get_all_risks(taxonomy="ibm-granite-guardian")
+            for risk in risk_atlas_nexus.get_all_risks(taxonomy="ibm-granite-guardian")
         ]:
             graph.add_node(
                 risk_name,
-                async_partial(assess_risk, risk_name, inference_engine),
+                partial(assess_risk, risk_name, inference_engine),
             )
             graph.add_edge("Start Risk Assessment", risk_name)
             graph.add_edge(risk_name, "Stop Risk Assessment")

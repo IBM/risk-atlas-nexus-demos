@@ -1,10 +1,9 @@
 import json
 from functools import partial
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 from langchain_core.runnables.config import RunnableConfig
 from langgraph.graph import END, START, StateGraph
-from langgraph.types import Send
 from pydantic import BaseModel
 from rich.console import Console, Group
 from rich.live import Live
@@ -12,9 +11,9 @@ from rich.panel import Panel
 from rich.progress import Progress
 
 from gaf_guard.agents import Agent
-from gaf_guard.toolkit.conn_manager import conn_manager
-from gaf_guard.toolkit.decorators import hline
+from gaf_guard.toolkit.decorators import step_logging
 from gaf_guard.toolkit.enums import MessageType, Role
+from gaf_guard.toolkit.logging import log_data
 
 
 STATUS_DISPLAY = {}
@@ -30,7 +29,7 @@ class OrchestratorState(BaseModel):
 
 
 # Node
-async def create_live_display(state: OrchestratorState, config: RunnableConfig):
+def create_live_display(state: OrchestratorState, config: RunnableConfig):
     progress = Progress()
     live = Live(console=Console())
     live.start()
@@ -43,15 +42,13 @@ async def create_live_display(state: OrchestratorState, config: RunnableConfig):
 
 
 # Node
-async def user_intent(state: OrchestratorState, config: RunnableConfig):
-    await conn_manager.log_benchmark(
-        state.user_intent, "User Intent", Role.USER, config["metadata"]["trial_file"]
-    )
+@step_logging("User Intent", benchmark="user_intent", benchmark_role=Role.USER)
+def user_intent(state: OrchestratorState, config: RunnableConfig):
+    return {"user_intent": state.user_intent}
 
 
 # Node
-# @hline("End of Workflow", at="end")
-async def next_agent(agent: Agent, state: OrchestratorState, config: RunnableConfig):
+def next_agent(agent: Agent, state: OrchestratorState, config: RunnableConfig):
     display = STATUS_DISPLAY.get(config["metadata"]["client_id"])
     if display["current_task"]:
         display["progress"].update(
@@ -78,11 +75,7 @@ async def next_agent(agent: Agent, state: OrchestratorState, config: RunnableCon
     display["current_task"] = {"task_id": task_id, "name": agent._WORKFLOW_NAME}
 
     if agent._WORKFLOW_NAME:
-        await conn_manager.send(
-            f"Workflow: [bold blue]{agent._WORKFLOW_NAME}[/]",
-            message_type=MessageType.RULE,
-            spacing="both",
-        )
+        log_data(f"Workflow: [bold blue]{agent._WORKFLOW_NAME}[/]", MessageType.RULE)
 
     return agent._WORKFLOW_NAME
 

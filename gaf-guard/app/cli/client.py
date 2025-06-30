@@ -1,5 +1,12 @@
+import asyncio
+
 #!/usr/bin/env python
 import os
+
+from acp_sdk.client import Client
+from acp_sdk.models import Message, MessagePart
+
+from gaf_guard.toolkit.enums import MessageType
 
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
@@ -10,21 +17,15 @@ import signal
 import sys
 import time
 import uuid
-from contextlib import suppress
 from datetime import datetime
-from pathlib import Path
-from time import sleep
 from typing import Annotated
 
 import typer
-import yaml
 from rich.align import Align
 from rich.console import Console, Group
 from rich.live import Live
 from rich.panel import Panel
 from rich.prompt import Prompt
-from websockets.asyncio.client import connect
-from websockets.exceptions import ConnectionClosedOK
 
 from gaf_guard.toolkit.enums import MessageType
 
@@ -42,17 +43,19 @@ app = typer.Typer()
 
 console = Console(log_time=True)
 
+client_id = str(uuid.uuid4())
 
-async def server_connect(host, port):
+
+async def run_stream(host, port):
     status = console.status(
         f"[bold yellow] Trying to connect to [italic blue][GAF Guard][/italic blue] using host: [bold white]{host}[/] and port: [bold white]{port}[/]. To abort press CTRL+C",
     )
+    processing = console.status(
+        "[italic bold yellow]Processing...[/]",
+        spinner_style="status.spinner",
+    )
     with Live(Group(status), console=console, screen=True) as live:
-        async for websocket in connect(
-            f"ws://{host}:{port}",
-            additional_headers={"client_id": str(uuid.uuid4())},
-            ping_timeout=None,
-        ):
+        async with Client(base_url=f"http://{host}:{port}") as client:
             status.update(f"[bold yellow] :bell: Successfully connected.[/]")
             time.sleep(2)
             live.stop()
@@ -69,61 +72,69 @@ async def server_connect(host, port):
                     border_style="blue",
                 )
             )
-            user_intent = Prompt.ask(
+            input_message_type = MessageType.USER_INTENT
+            input_message = Prompt.ask(
                 prompt=f"\n[bold blue] Enter your intent[/bold blue]",
                 console=console,
             )
-            await websocket.send(
-                json.dumps(
-                    {
-                        "message_type": MessageType.USER_INTENT,
-                        "user_intent": user_intent,
-                    }
-                )
-            )
 
-            try:
-                while True:
-                    with console.status(
-                        "[italic bold yellow]Processing...[/]",
-                        spinner_style="status.spinner",
-                    ):
-                        message = await websocket.recv()
-
-                    message = json.loads(message)
-                    body = message.pop("body")
-                    msg_type = message.pop("message_type")
-                    if not body:
-                        continue
-                    elif msg_type == MessageType.PRINT:
-                        console.print(body, **message)
-                    elif msg_type == MessageType.RULE:
-                        spacing = message.pop("spacing", "None")
-                        if spacing in ["before", "both"]:
-                            print()
-                        Console(width=message.pop("width", None)).rule(body, **message)
-                        if spacing in ["after", "both"]:
-                            print()
-                    elif msg_type == MessageType.INTERRUPT_QUERY:
-                        prompt_response = Prompt.ask(
-                            prompt=body["message"],
-                            console=console,
-                            choices=body["choices"] if "choices" in body else None,
-                            show_choices=False,
+            COMPLETED = False
+            while True:
+                processing.start()
+                async for event in client.run_stream(
+                    agent="orchestrator",
+                    input=[
+                        Message(
+                            parts=[
+                                MessagePart(
+                                    content=json.dumps(
+                                        {
+                                            "client_id": client_id,
+                                            "message_type": input_message_type,
+                                            "message": input_message,
+                                        }
+                                    ),
+                                    content_type="text/plain",
+                                )
+                            ]
                         )
-                        await websocket.send(
-                            json.dumps(
-                                {
-                                    "body": prompt_response,
-                                    "message_type": MessageType.INTERRUPT_RESPONSE,
-                                }
+                    ],
+                ):
+                    processing.stop()
+                    if event.type == "message.part":
+                        body = json.loads(event.part.content)
+                        body_message_type = body["msg_type"]
+                        body_message = body["message"]
+                        body_message_kwargs = body.get("message_kwargs", {}) or {}
+                        if body_message:
+                            if body_message_type == MessageType.RULE:
+                                print()
+                                Console(width=None).rule(
+                                    body_message, **body_message_kwargs
+                                )
+                            elif body_message_type == MessageType.DATA:
+                                console.print(body_message, **body_message_kwargs)
+                    elif event.type == "run.awaiting":
+                        if hasattr(event, "run"):
+                            body = json.loads(
+                                event.run.await_request.message.parts[0].content
                             )
-                        )
+                            body_message = body["message"]
+                            choices = body.get("choices", None)
 
-            except ConnectionClosedOK:
-                print("Request Completed.")
-            except Exception as e:
-                print(f"Client Error: {str(e)}")
+                            input_message = Prompt.ask(
+                                prompt=body_message,
+                                console=console,
+                                choices=choices if choices else None,
+                                show_choices=False,
+                            )
+                            input_message_type = MessageType.INTERRUPT_RESPONSE
+                    elif event.type == "run.completed":
+                        COMPLETED = True
+                    processing.start()
+
+                if COMPLETED:
+                    break
 
 
 @app.command()
@@ -144,7 +155,7 @@ def main(
     ] = 8000,
 ):
     os.system("clear")
-    asyncio.run(server_connect(host=host, port=port))
+    asyncio.run(run_stream(host=host, port=port))
 
 
 if __name__ == "__main__":
