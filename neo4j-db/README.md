@@ -19,11 +19,7 @@ Start a Neo4j container and mount the ./examples folder inside the container:
 
 2. Run image
 ``` 
-docker run --rm --name <containerID/name> --volume /<your_own_path>/risk-atlas-nexus-demos/neo4j-db/examples:/examples
---publish=7474:7474 \
---publish=7687:7687 \
---env NEO4J_AUTH=neo4j/<your_own_password> \ 
-neo4j:2025.05.0
+docker run --name ran_neo4j --rm --volume <YOUR_WORKSPACE_PATH>/risk-atlas-nexus-demos/neo4j-db/examples:/examples --publish=7474:7474 --publish=7687:7687 --env NEO4J_AUTH=neo4j/riskatlasnexus neo4j:latest
 ```
 
 
@@ -38,7 +34,7 @@ docker ps -a
 use the Cypher Shell tool 
 
 ```
-docker exec --interactive --tty 391641719c00 cypher-shell -u neo4j -p riskatlasnexus
+docker exec --interactive --tty ran_neo4j cypher-shell -u neo4j -p riskatlasnexus
 ```
 then use the `:source` command to run the example script in the cypher-shell
 
