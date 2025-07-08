@@ -1,0 +1,11 @@
+{
+  "dependencies": [
+    "."
+  ],
+  "graphs": {
+    "risk_generator": "app/langgraph-studio/main.py:risk_generator_graph",
+    "risk_assessment": "app/langgraph-studio/main.py:risk_assessment_graph",
+    "drift_monitoring": "app/langgraph-studio/main.py:drift_monitoring_graph"
+  },
+  "env": ".env"
+}

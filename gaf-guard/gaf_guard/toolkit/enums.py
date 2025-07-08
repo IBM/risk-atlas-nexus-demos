@@ -2,13 +2,17 @@ from enum import StrEnum, auto
 
 
 class MessageType(StrEnum):
-    USER_INTENT = auto()
-    DATA = auto()
-    RULE = auto()
-    INTERRUPT_QUERY = auto()
-    INTERRUPT_RESPONSE = auto()
+    WORKFLOW_INPUT = auto()
+    WORKFLOW_STARTED = auto()
+    WORKFLOW_COMPLETED = auto()
+    STEP_STARTED = auto()
+    STEP_COMPLETED = auto()
+    STEP_DATA = auto()
+    HITL_QUERY = auto()
+    HITL_RESPONSE = auto()
 
 
 class Role(StrEnum):
     USER = "user"
-    ASSISTANT = "assistant"
+    AGENT = "agent"
+    SYSTEM = "system"
