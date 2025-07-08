@@ -9,7 +9,7 @@ from risk_atlas_nexus.blocks.inference import InferenceEngine
 
 from gaf_guard.agents import Agent
 from gaf_guard.templates import DRIFT_COT_TEMPLATE
-from gaf_guard.toolkit.decorators import step_logging
+from gaf_guard.toolkit.decorators import workflow_step
 
 
 # Graph state
@@ -21,18 +21,18 @@ class DriftMonitoringState(BaseModel):
 
 
 # Nodes
-@step_logging(
-    step="Drift Monitoring Setup", at="both", step_desc="Setting Initial Values:"
+@workflow_step(
+    step_name="Drift Monitoring Setup", step_desc="Setting Initial Values:", log=True
 )
 def drift_monitoring_setup(state: DriftMonitoringState, config: RunnableConfig):
     return {
         "drift_value": state.drift_value,
-        "log": f"[bold yellow]Drift value:[/bold yellow] {state.drift_value}, [bold yellow]Drift threshold:[/bold yellow] {config['configurable']['drift_threshold']}",
+        "drift_threshold": config["configurable"]["drift_threshold"],
     }
 
 
 # Nodes
-@step_logging(step="Drift Monitoring", at="both", benchmark="log")
+@workflow_step(step_name="Drift Monitoring", log=True)
 def check_prompt_relevance(
     inference_engine: InferenceEngine,
     state: DriftMonitoringState,
@@ -62,23 +62,18 @@ def check_prompt_relevance(
     if response.prediction["answer"].lower() == "other":
         state.drift_value += 1
 
-    return {
-        "drift_value": state.drift_value,
-        "log": f"Drift Value: {state.drift_value} (Threshold: {config['configurable']['drift_threshold']})",
-    }
+    return {"drift_value": state.drift_value}
 
 
 # Nodes
-@step_logging(step="Drift Reporting", at="both", benchmark="incident_message")
+@workflow_step(step_name="Drift Reporting", log=True)
 def drift_incident_reporting(state: DriftMonitoringState, config: RunnableConfig):
     if state.drift_value > config["configurable"]["drift_threshold"]:
-        incident_message = (
-            f"[bold red]Alert: Potential drift in prompts identified.[/bold red]"
-        )
+        incident_message = f"[red]Alert: Potential drift in prompts identified.[/red]"
     else:
-        incident_message = f"[bold green]No drift detected.[/bold green]"
+        incident_message = f"[green]No drift detected.[/green]"
 
-    return {"incident_message": incident_message, "log": incident_message}
+    return {"incident_message": incident_message}
 
 
 class DriftMonitoringAgent(Agent):

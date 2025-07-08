@@ -1,14 +1,12 @@
-from IPython.display import Image, display
-from gaf_guard.agents import (
-    RiskGeneratorAgent,
-    HumanInTheLoopAgent,
-    StreamAgent,
-    RisksAssessmentAgent,
-    DriftMonitoringAgent,
-)
-from langgraph.checkpoint.memory import MemorySaver
 from risk_atlas_nexus.blocks.inference import OllamaInferenceEngine
 from risk_atlas_nexus.blocks.inference.params import OllamaInferenceEngineParams
+
+from gaf_guard.agents import (
+    DriftMonitoringAgent,
+    RiskGeneratorAgent,
+    RisksAssessmentAgent,
+)
+
 
 ollama_granite = OllamaInferenceEngine(
     model_name_or_path="granite3.2:8b",
@@ -35,21 +33,13 @@ ollama_llama = OllamaInferenceEngine(
 )
 
 risk_generator = RiskGeneratorAgent()
-risk_generator.compile(MemorySaver(), **{"inference_engine": ollama_granite})
+risk_generator.compile(None, **{"inference_engine": ollama_granite})
 risk_generator_graph = risk_generator.workflow
 
-hitl = HumanInTheLoopAgent()
-hitl.compile(MemorySaver(), **{"inference_engine": ollama_granite})
-hitl_graph = hitl.workflow
-
-streamer = StreamAgent()
-streamer.compile(MemorySaver(), **{"inference_engine": ollama_granite})
-streamer_graph = streamer.workflow
-
 risk_assessment = RisksAssessmentAgent()
-risk_assessment.compile(MemorySaver(), **{"inference_engine": ollama_granite_guardian})
+risk_assessment.compile(None, **{"inference_engine": ollama_granite_guardian})
 risk_assessment_graph = risk_assessment.workflow
 
 drift_monitoring = DriftMonitoringAgent()
-drift_monitoring.compile(MemorySaver(), **{"inference_engine": ollama_llama})
+drift_monitoring.compile(None, **{"inference_engine": ollama_llama})
 drift_monitoring_graph = drift_monitoring.workflow

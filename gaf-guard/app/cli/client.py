@@ -6,7 +6,7 @@ import os
 from acp_sdk.client import Client
 from acp_sdk.models import Message, MessagePart
 
-from gaf_guard.toolkit.enums import MessageType
+from gaf_guard.toolkit.enums import MessageType, Role
 
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
@@ -16,7 +16,6 @@ import os
 import signal
 import sys
 import time
-import uuid
 from datetime import datetime
 from typing import Annotated
 
@@ -28,6 +27,7 @@ from rich.panel import Panel
 from rich.prompt import Prompt
 
 from gaf_guard.toolkit.enums import MessageType
+from gaf_guard.toolkit.models import WorkflowMessage, WorkflowStepMessage
 
 
 def signal_handler(sig, frame):
@@ -43,8 +43,6 @@ app = typer.Typer()
 
 console = Console(log_time=True)
 
-client_id = str(uuid.uuid4())
-
 
 async def run_stream(host, port):
     status = console.status(
@@ -55,7 +53,10 @@ async def run_stream(host, port):
         spinner_style="status.spinner",
     )
     with Live(Group(status), console=console, screen=True) as live:
-        async with Client(base_url=f"http://{host}:{port}") as client:
+        async with (
+            Client(base_url=f"http://{host}:{port}") as client,
+            client.session() as session,
+        ):
             status.update(f"[bold yellow] :bell: Successfully connected.[/]")
             time.sleep(2)
             live.stop()
@@ -72,28 +73,30 @@ async def run_stream(host, port):
                     border_style="blue",
                 )
             )
-            input_message_type = MessageType.USER_INTENT
-            input_message = Prompt.ask(
-                prompt=f"\n[bold blue] Enter your intent[/bold blue]",
-                console=console,
-            )
+            input_message_type = MessageType.WORKFLOW_INPUT
+            input_message_content = {
+                "user_intent": Prompt.ask(
+                    prompt=f"\n[bold blue]Enter your intent[/bold blue]",
+                    console=console,
+                )
+            }
 
             COMPLETED = False
             while True:
                 processing.start()
-                async for event in client.run_stream(
+                async for event in session.run_stream(
                     agent="orchestrator",
                     input=[
                         Message(
                             parts=[
                                 MessagePart(
-                                    content=json.dumps(
-                                        {
-                                            "client_id": client_id,
-                                            "message_type": input_message_type,
-                                            "message": input_message,
-                                        }
-                                    ),
+                                    content=WorkflowMessage(
+                                        name="GAF Guard Client",
+                                        type=input_message_type,
+                                        role=Role.USER,
+                                        content=input_message_content,
+                                        client_id=str(session._session.id),
+                                    ).model_dump_json(),
                                     content_type="text/plain",
                                 )
                             ]
@@ -101,34 +104,59 @@ async def run_stream(host, port):
                     ],
                 ):
                     processing.stop()
+                    step = None
                     if event.type == "message.part":
-                        body = json.loads(event.part.content)
-                        body_message_type = body["msg_type"]
-                        body_message = body["message"]
-                        body_message_kwargs = body.get("message_kwargs", {}) or {}
-                        if body_message:
-                            if body_message_type == MessageType.RULE:
-                                print()
-                                Console(width=None).rule(
-                                    body_message, **body_message_kwargs
+                        message = WorkflowStepMessage(**json.loads(event.part.content))
+                        if message.step_type == MessageType.WORKFLOW_STARTED:
+                            print()
+                            Console(width=None).rule(
+                                f"Workflow: [bold blue]{message.step_name}[/]",
+                                **message.step_kwargs,
+                            )
+                        elif message.step_type == MessageType.STEP_STARTED:
+                            if message.step_name != "Risk Assessment":
+                                console.print(
+                                    f"\n[bold blue]Workflow Step: [bold white]{message.step_name}[/bold white]....Started",
+                                    **message.step_kwargs,
                                 )
-                            elif body_message_type == MessageType.DATA:
-                                console.print(body_message, **body_message_kwargs)
+                            if message.step_desc:
+                                console.print(message.step_desc, **message.step_kwargs)
+                        elif message.step_type == MessageType.STEP_COMPLETED:
+                            if message.step_name != "Risk Assessment":
+                                console.print(
+                                    f"[bold blue]Workflow Step: [bold white]{message.step_name}[/bold white]....Completed",
+                                    **message.step_kwargs,
+                                )
+                        elif message.step_type == MessageType.STEP_DATA:
+                            if isinstance(message.content, dict):
+                                for key, value in message.content.items():
+                                    if key != "risk_report":
+                                        console.print(
+                                            f"[bold yellow]{key.replace('_', ' ').title()}[/bold yellow]: {value}",
+                                            **message.step_kwargs,
+                                        )
+                            else:
+                                console.print(message.content, **message.step_kwargs)
                     elif event.type == "run.awaiting":
                         if hasattr(event, "run"):
-                            body = json.loads(
-                                event.run.await_request.message.parts[0].content
+                            message = WorkflowStepMessage(
+                                **json.loads(
+                                    event.run.await_request.message.parts[0].content
+                                )
                             )
-                            body_message = body["message"]
-                            choices = body.get("choices", None)
-
-                            input_message = Prompt.ask(
-                                prompt=body_message,
-                                console=console,
-                                choices=choices if choices else None,
-                                show_choices=False,
-                            )
-                            input_message_type = MessageType.INTERRUPT_RESPONSE
+                            input_message_content = {
+                                "response": Prompt.ask(
+                                    prompt=f"[bold blue]{message.content}[/bold blue]",
+                                    console=console,
+                                    choices=(
+                                        message.step_kwargs["choices"]
+                                        if "choices" in message.step_kwargs
+                                        else None
+                                    ),
+                                    show_choices=False,
+                                )
+                            }
+                            input_message_type = MessageType.HITL_RESPONSE
                     elif event.type == "run.completed":
                         COMPLETED = True
                     processing.start()
