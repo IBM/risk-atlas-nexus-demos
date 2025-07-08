@@ -56,6 +56,22 @@ This project targets python version ">=3.11, <3.12". You can download specific v
 5. Run benchmark
    - `python app/cli/run_benchmark.py --host localhost --port 8000 --trial-dir trials`
 
+## Referencing the project
+
+If you use GAF-Guard in your projects, please consider citing the following:
+
+```bib
+@article{gafguard2025,
+      title={GAF-Guard: An Agentic Framework for Risk Management and Governance in Large Language Models},
+      author={Seshu Tirupathi, Dhaval Salwala, Elizabeth M. Daly and Inge Vejsbjerg},
+      year={2025},
+      eprint={2507.02986},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2507.02986}
+}
+```
+
 ## License
 
 GAF-Guard is under Apache 2.0 license.
