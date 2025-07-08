@@ -10,8 +10,10 @@ from rich.console import Console
 from risk_atlas_nexus.blocks.inference import InferenceEngine
 
 from gaf_guard.agents import Agent
-from gaf_guard.toolkit.decorators import step_logging
+from gaf_guard.toolkit.decorators import workflow_step
+from gaf_guard.toolkit.enums import MessageType, Role
 from gaf_guard.toolkit.exceptions import HumanInterruptionException
+from gaf_guard.toolkit.models import WorkflowStepMessage
 
 
 console = Console()
@@ -23,24 +25,26 @@ class HumanInTheLoopAgentState(BaseModel):
 
 
 # Node
-@step_logging("Gather AI Risks for Human Intervention", at="both", benchmark="log")
+@workflow_step(step_name="Gather AI Risks for Human Intervention", log=True)
 def gather_ai_risks(state: HumanInTheLoopAgentState, config: RunnableConfig):
-    return {"log": state.identified_risks}
+    return {"identified_risks": state.identified_risks}
 
 
 # Node
-@step_logging("Getting Human Response on AI Risks")
 def get_human_response(state: HumanInTheLoopAgentState, config: RunnableConfig):
     syntax_error = False
     while True:
         try:
             updated_risks = interrupt(
-                {
-                    "message": (
+                WorkflowStepMessage(
+                    step_type=MessageType.HITL_QUERY,
+                    content=(
                         ("\nSyntax Error, Try Again." if syntax_error else "")
                         + f"\nPlease Accept (Press Enter) or Suggest edits for AI Risks (Type your answer as a python List)"
-                    )
-                }
+                    ),
+                    step_name="Human Intervention",
+                    step_role=Role.SYSTEM,
+                ).model_dump()
             )
         except GraphInterrupt as e:
             raise HumanInterruptionException(json.dumps(e.args[0][0].value))
@@ -58,9 +62,11 @@ def get_human_response(state: HumanInTheLoopAgentState, config: RunnableConfig):
 
 
 # Node
-@step_logging("Updated AI Risks from Human Response", at="both", benchmark="log")
+@workflow_step(
+    step_name="Updated AI Risks from Human Response", step_role=Role.USER, log=True
+)
 def updated_ai_risks(state: HumanInTheLoopAgentState, config: RunnableConfig):
-    return {"log": state.identified_risks}
+    return {"identified_risks": state.identified_risks}
 
 
 class HumanInTheLoopAgent(Agent):

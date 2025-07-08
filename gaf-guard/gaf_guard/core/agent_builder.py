@@ -1,17 +1,13 @@
 import importlib
-import json
-from typing import Dict, Iterable
-import itertools
+from typing import Dict
+
 from langgraph.checkpoint.memory import MemorySaver
-from rich.console import Console, Group
-from rich.live import Live
-from rich.panel import Panel
-from rich.progress import Progress
+from rich.console import Console
 from risk_atlas_nexus.blocks.inference.params import InferenceEngineCredentials
 
-from gaf_guard.agents import Agent, RiskGeneratorAgent, HumanInTheLoopAgent
+from gaf_guard.agents import BenchmarkAgent, OrchestratorAgent
 from gaf_guard.toolkit.logging import configure_logger
-from gaf_guard.agents import OrchestratorAgent
+
 
 console = Console()
 logger = configure_logger(__name__)
@@ -36,23 +32,19 @@ class AgentBuilder:
             agent_instance = self.agent(agent_class, **agent_params)
             agents.append(agent_instance)
 
-        orchestrator = OrchestratorAgent()
-        orchestrator.compile(self.memory, agents=agents)
-        return orchestrator
-
-    def invoke_stream(self, state_dict):
-        for index, agent in enumerate(self.agents, start=1):
-
-            config_dict: Dict = self.params[agent.__class__.__name__].get("config", {})
-            config_dict.update({"thread_id": str(index)})
-
-            agent.invoke_stream(state_dict, config={"configurable": config_dict})
+        return tuple(agents)
 
     def eval_param(self, param_name, param_value):
         if hasattr(self, param_name):
             return getattr(self, param_name)(param_value)
-        elif param_name.endswith("_agent"):
-            return self.agent(param_value)
+        elif param_name.endswith("Agent"):
+            agent_params = {}
+            for inner_param_name, inner_param_value in param_value.items():
+                agent_params[inner_param_name] = self.eval_param(
+                    inner_param_name, inner_param_value
+                )
+
+            return self.agent(param_name, **agent_params)
         else:
             return param_value
 
