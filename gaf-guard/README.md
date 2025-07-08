@@ -53,6 +53,9 @@ This project targets python version ">=3.11, <3.12". You can download specific v
 4. Start the GAF-Guard client
    - `python app/cli/client.py --host localhost --port 8000`
 
+5. Run benchmark
+   - `python app/cli/run_benchmark.py --host localhost --port 8000 --trial-dir trials`
+
 ## License
 
 GAF-Guard is under Apache 2.0 license.

@@ -10,9 +10,10 @@ from pydantic import BaseModel
 from risk_atlas_nexus.blocks.inference import InferenceEngine
 
 from gaf_guard.agents import Agent
-from gaf_guard.toolkit.decorators import step_logging
-from gaf_guard.toolkit.enums import Role
+from gaf_guard.toolkit.decorators import workflow_step
+from gaf_guard.toolkit.enums import MessageType, Role
 from gaf_guard.toolkit.exceptions import HumanInterruptionException
+from gaf_guard.toolkit.models import WorkflowStepMessage
 
 
 PROMPT_GEN = iter([])
@@ -45,24 +46,39 @@ def is_next_prompt_available(state: StreamAgentState):
 def load_input_prompts(state: StreamAgentState):
     try:
         choice = interrupt(
-            {
-                "message": "[bold blue]Please choose one of the options for real-time Risk Assessment and Drift Monitoring[/bold blue]\n1. Enter prompt manually\n2. Start streaming prompts from a JSON file.\nYour Choice ",
-                "choices": [
-                    "1",
-                    "2",
-                ],
-            }
+            WorkflowStepMessage(
+                step_type=MessageType.HITL_QUERY,
+                content="\nPlease choose one of the options for real-time Risk Assessment and Drift Monitoring\n1. Enter prompt manually\n2. Start streaming prompts from a JSON file.\nYour Choice ",
+                step_name="Stream Prompt",
+                step_role=Role.SYSTEM,
+                step_kwargs={
+                    "choices": [
+                        "1",
+                        "2",
+                    ]
+                },
+            ).model_dump()
         )
 
         if choice["response"] == "1":
             prompts = [
-                interrupt({"message": "\n[bold blue]Enter your prompt[/bold blue]"})[
-                    "response"
-                ]
+                interrupt(
+                    WorkflowStepMessage(
+                        step_type=MessageType.HITL_QUERY,
+                        content="\nEnter your prompt",
+                        step_name="Stream Prompt",
+                        step_role=Role.SYSTEM,
+                    ).model_dump()
+                )["response"]
             ]
         elif choice["response"] == "2":
             prompt_file = interrupt(
-                {"message": "\n[bold blue]Enter JSON file path[/bold blue]"}
+                WorkflowStepMessage(
+                    step_type=MessageType.HITL_QUERY,
+                    content="\nEnter JSON file path",
+                    step_name="Stream Prompt",
+                    step_role=Role.SYSTEM,
+                ).model_dump()
             )
             prompts = json.load(Path(prompt_file["response"]).open("r"))
 
@@ -76,14 +92,9 @@ def load_input_prompts(state: StreamAgentState):
 
 
 # Node
-@step_logging(
-    "Input Prompt", benchmark="prompt", benchmark_role=Role.USER, align="center"
-)
+@workflow_step(step_name="Input Prompt", step_role=Role.USER, log=True)
 def stream_input_prompt(state: StreamAgentState, config: RunnableConfig):
-    return {
-        "prompt": state.prompt,
-        "log": f"\n--------------[bold green]Input Prompt {state.prompt_index}[/]--------------\n\n{state.prompt}",
-    }
+    return {"prompt_index": state.prompt_index, "prompt": state.prompt}
 
 
 class StreamAgent(Agent):

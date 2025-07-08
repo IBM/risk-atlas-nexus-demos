@@ -13,14 +13,22 @@ from risk_atlas_nexus.blocks.inference import InferenceEngine
 from risk_atlas_nexus.blocks.prompt_response_schema import LIST_OF_STR_SCHEMA
 from risk_atlas_nexus.data import load_resource
 from risk_atlas_nexus.library import RiskAtlasNexus
+from typing_extensions import Annotated, TypedDict
 
 from gaf_guard.agents import Agent
+from gaf_guard.agents.benchmark import BenchmarkAgent
 from gaf_guard.templates import RISKS_GENERATION_COT_TEMPLATE
-from gaf_guard.toolkit.decorators import step_logging
+from gaf_guard.toolkit.decorators import workflow_step
 
 
 console = Console()
 risk_atlas_nexus = RiskAtlasNexus()
+
+
+# Graph config
+class RiskGenerationConfig(TypedDict):
+    risk_questionnaire_cot: List
+    risk_generation_cot: List
 
 
 # Graph state
@@ -33,26 +41,22 @@ class RiskGenerationState(BaseModel):
 
 
 # Node
-@step_logging(step="Domain Identification", at="both", benchmark="domain")
+@workflow_step(step_name="Domain Identification", log=True)
 def get_usecase_domain(
     inference_engine: InferenceEngine,
     state: RiskGenerationState,
-    config: RunnableConfig,
+    config: RiskGenerationConfig,
 ):
     domain = risk_atlas_nexus.identify_domain_from_usecases(
         [state.user_intent], inference_engine, verbose=False
     )[0].prediction["answer"]
 
-    return {
-        "domain": domain,
-        "log": f"Identified domain from the user_intent: [bold yellow]{domain}[/bold yellow]",
-    }
+    return {"domain": domain}
+    # "log": f"Identified domain from the user_intent: [bold yellow]{domain}[/bold yellow]",
 
 
 # Node
-@step_logging(
-    step="Questionnaire Prediction",
-)
+@workflow_step(step_name="Questionnaire Prediction", log=True)
 def generate_zero_shot(
     inference_engine: InferenceEngine,
     state: RiskGenerationState,
@@ -80,15 +84,14 @@ def generate_zero_shot(
             }
         )
 
-    return {"risk_questionnaire": risk_questionnaire, "log": risk_questionnaire}
+    return {"risk_questionnaire": risk_questionnaire}
 
 
 # Node
-@step_logging(
-    step="Questionnaire Prediction",
-    at="both",
+@workflow_step(
+    step_name="Questionnaire Prediction",
     step_desc="Chain of Thought (CoT) data found, using Few-shot method...",
-    benchmark="risk_questionnaire",
+    log=True,
 )
 def generate_few_shot(
     inference_engine: InferenceEngine,
@@ -117,10 +120,7 @@ def generate_few_shot(
             }
         )
 
-    return {
-        "risk_questionnaire": risk_questionnaire_responses,
-        "log": risk_questionnaire_responses,
-    }
+    return {"risk_questionnaire": risk_questionnaire_responses}
 
 
 # Node
@@ -148,7 +148,7 @@ def is_cot_data_present(state: RiskGenerationState, config: RunnableConfig):
 
 
 # Node
-@step_logging(step="Risk Generation", at="both", benchmark="identified_risks")
+@workflow_step(step_name="Risk Generation", log=True)
 def identify_risks(
     inference_engine: InferenceEngine,
     state: RiskGenerationState,
@@ -195,11 +195,11 @@ def identify_risks(
     # Get unique risk labels.
     identified_risks = list(set(identified_risks))
 
-    return {"identified_risks": identified_risks, "log": identified_risks}
+    return {"identified_risks": identified_risks}
 
 
 # Node
-@step_logging(step="AI Tasks", at="both", benchmark="identified_ai_tasks")
+@workflow_step(step_name="AI Tasks", log=True)
 def identify_ai_tasks(
     inference_engine: InferenceEngine,
     state: RiskGenerationState,
@@ -209,12 +209,17 @@ def identify_ai_tasks(
         [state.user_intent], inference_engine, verbose=False
     )[0]
 
-    return {"identified_ai_tasks": ai_tasks.prediction, "log": ai_tasks.prediction}
+    return {"identified_ai_tasks": ai_tasks.prediction}
 
 
 # Node
-@step_logging(step="Persisting Results", at="both")
+@workflow_step(step_name="Persisting Results", log=True)
 def persist_to_memory(state: RiskGenerationState, config: RunnableConfig):
+    return {"log": "The data has been saved in Memory."}
+
+
+# Node
+def benchmark(benchmark: BenchmarkAgent, state: RiskGenerationState):
     return {"log": "The data has been saved in Memory."}
 
 
@@ -229,7 +234,9 @@ class RiskGeneratorAgent(Agent):
     )
 
     def __init__(self):
-        super(RiskGeneratorAgent, self).__init__(RiskGenerationState, RunnableConfig)
+        super(RiskGeneratorAgent, self).__init__(
+            RiskGenerationState, RiskGenerationConfig
+        )
 
     def _build_graph(self, graph: StateGraph, inference_engine: InferenceEngine):
 
