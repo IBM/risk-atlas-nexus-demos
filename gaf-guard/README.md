@@ -42,19 +42,21 @@ This project targets python version ">=3.11, <3.12". You can download specific v
    pip install -e .
    ```
 
-2. Update the config variables and inference engine params in the server config file. Start your LLM server viz. ollama, vllm. Update LLM server credentials in `app/cli/server_config.yaml`.
+2. Update the config variables and inference engine params in the server config file. Update LLM server (viz. ollama, vllm) credentials in the config file. Example server config is given below.
 
-   - `nano app/cli/server_config.yaml`
+   - `nano examples/server_configs/risk_assessment.yaml`
 
-3. Start the GAF-Guard server
+3. Create a `.env` file in the root directory by copying `.env.example`, and update it with the required parameters.
 
-   - `python app/cli/server.py --config-file app/cli/server_config.yaml --host localhost --port 8000`
+4. Start the GAF-Guard server
 
-4. Start the GAF-Guard client
-   - `python app/cli/client.py --host localhost --port 8000`
+   - `gaf-guard serve examples/server_configs/risk_assessment.yaml`
 
-5. Run benchmark
-   - `python app/cli/run_benchmark.py --host localhost --port 8000 --trial-dir trials`
+5. Start the GAF-Guard client
+   - `python apps/cli/client.py --host localhost --port 8000`
+
+6. To run benchmark on already logged JSON trajectories
+   - `python apps/cli/run_benchmark.py --host localhost --port 8000 --trial-dir trials`
 
 ## Referencing the project
 

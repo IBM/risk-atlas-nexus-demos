@@ -1,6 +1,6 @@
 [project]
 name = "gaf_guard"
-version = "0.0.2"
+version = "0.1.0"
 authors = [
     { name = "Seshu Tirupati", email = "seshutir@ie.ibm.com" },
     { name = "Dhaval Salwala", email = "dhaval.vinodbhai.salwala@ibm.com" },
@@ -15,7 +15,7 @@ keywords = [
 ]
 description = "An Agentic AI framework that can effectively detect and manage risks associated with LLMs for a given use-case."
 readme = "README.md"
-requires-python = ">=3.11, <3.12"
+requires-python = ">=3.11.5"
 classifiers = [
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
@@ -48,9 +48,6 @@ ollama = ["ollama"]
 wml = ["ibm-watsonx-ai"]
 vllm = ["vllm", "xgrammar"]
 
-[tool.setuptools]
-packages = ["gaf_guard"]
-
 [tool.isort]
 profile = "black"
 line_length = 88
@@ -62,3 +59,12 @@ lines_after_imports = 2
 [project.urls]
 Homepage = "https://github.com/IBM/risk-atlas-nexus-demos/tree/main/gaf-guard"
 Documentation = "https://github.com/IBM/risk-atlas-nexus-demos/tree/main/gaf-guard"
+
+[tool.setuptools.package-data]
+src = ["*.json"]
+
+[tool.setuptools.dynamic]
+version = {attr = "gaf_guard.__version__"}
+
+[project.scripts]
+gaf-guard = "gaf_guard.serve:app"
