@@ -9,8 +9,6 @@ from acp_sdk.client import Client
 from acp_sdk.models import Message, MessagePart
 from rich.console import Console
 
-from gaf_guard.toolkit.enums import Role
-
 
 console = Console(log_time=True)
 app = typer.Typer()
@@ -23,7 +21,7 @@ async def run_benchmark(host, port, trial_dir) -> None:
             spinner_style="status.spinner",
         ):
             run = await client.run_sync(
-                agent=Role.USER,
+                agent="benchmark",
                 input=[
                     Message(
                         parts=[

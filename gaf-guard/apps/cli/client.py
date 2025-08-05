@@ -6,6 +6,8 @@ import os
 from acp_sdk.client import Client
 from acp_sdk.models import Message, MessagePart
 
+from gaf_guard.toolkit.file_utils import resolve_file_paths
+
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
 import asyncio
@@ -49,6 +51,18 @@ signal.signal(signal.SIGINT, signal_handler)
 app = typer.Typer()
 
 console = Console(log_time=True)
+
+run_configs = {
+    "RiskGeneratorAgent": {
+        "risk_questionnaire_cot": "examples/data/chain_of_thought/risk_questionnaire.json",
+        "risk_generation_cot": "examples/data/chain_of_thought/risk_generation.json",
+    },
+    "DriftMonitoringAgent": {
+        "drift_threshold": 2,
+        "drift_monitoring_cot": "examples/data/chain_of_thought/drift_monitoring.json",
+    },
+}
+resolve_file_paths(run_configs)
 
 
 async def run_stream(host, port):
@@ -102,7 +116,7 @@ async def run_stream(host, port):
                                         step_type=input_message_type,
                                         step_role=Role.USER,
                                         content=input_message_content,
-                                        client_id=str(session._session.id),
+                                        run_configs=run_configs,
                                     ).model_dump_json(),
                                     content_type="text/plain",
                                 )

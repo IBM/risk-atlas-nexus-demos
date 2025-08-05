@@ -8,8 +8,8 @@ from pydantic import BaseModel
 from risk_atlas_nexus.blocks.inference import InferenceEngine
 
 from gaf_guard.core.agents import Agent
-from gaf_guard.templates import DRIFT_COT_TEMPLATE
 from gaf_guard.core.decorators import workflow_step
+from gaf_guard.templates import DRIFT_COT_TEMPLATE
 
 
 # Graph state
@@ -23,10 +23,14 @@ class DriftMonitoringState(BaseModel):
 # Nodes
 @workflow_step(step_name="Drift Monitoring Setup", step_desc="Setting Initial Values:")
 def drift_monitoring_setup(state: DriftMonitoringState, config: RunnableConfig):
-    return {
-        "drift_value": state.drift_value,
-        "drift_threshold": config.get("configurable", {}).get("drift_threshold", 2),
-    }
+
+    drift_threshold = (
+        config.get("configurable", {})
+        .get("DriftMonitoringAgent", {})
+        .get("drift_threshold", 2)
+    )
+
+    return {"drift_value": state.drift_value, "drift_threshold": drift_threshold}
 
 
 # Nodes
@@ -36,10 +40,14 @@ def check_prompt_relevance(
     state: DriftMonitoringState,
     config: RunnableConfig,
 ):
+    drift_monitoring_cot = (
+        config.get("configurable", {})
+        .get("DriftMonitoringAgent", {})
+        .get("drift_monitoring_cot", None)
+    )
+
     prompt_str = Template(DRIFT_COT_TEMPLATE).render(
-        prompt=state.prompt,
-        examples=config.get("configurable", {}).get("drift_monitoring_cot", None),
-        domain=state.domain,
+        prompt=state.prompt, examples=drift_monitoring_cot, domain=state.domain
     )
 
     response = inference_engine.chat(
@@ -66,12 +74,23 @@ def check_prompt_relevance(
 # Nodes
 @workflow_step(step_name="Drift Reporting")
 def drift_incident_reporting(state: DriftMonitoringState, config: RunnableConfig):
-    if state.drift_value > config["configurable"]["drift_threshold"]:
+
+    drift_threshold = (
+        config.get("configurable", {})
+        .get("DriftMonitoringAgent", {})
+        .get("drift_threshold", 2)
+    )
+
+    if state.drift_value > drift_threshold:
         incident_alert = f"Potential drift in prompts identified."
     else:
         incident_message = f"No drift detected."
 
-    return {"incident_message": incident_message} if "incident_message" in locals() else {"incident_alert": incident_alert}
+    return (
+        {"incident_message": incident_message}
+        if "incident_message" in locals()
+        else {"incident_alert": incident_alert}
+    )
 
 
 class DriftMonitoringAgent(Agent):

@@ -1,5 +1,6 @@
 import json
 from enum import StrEnum
+from functools import partial
 from pathlib import Path, PurePath
 from typing import Any
 
@@ -29,9 +30,10 @@ class TrialLoggerAgentState(BaseModel):
 
 
 # Node
-def yaml_serializer(state: TrialLoggerAgentState, config: RunnableConfig):
+def yaml_serializer(
+    trial_dir: str, state: TrialLoggerAgentState, config: RunnableConfig
+):
     """Serialize Python object to YAML and write to file."""
-    trial_dir = Path(config.get("configurable", {}).get("trial_dir", "trials"))
     trial_name = config.get("metadata", {}).get("trial_name", "Trials_")
     file_path = Path(PurePath(trial_dir, trial_name + ".yaml"))
 
@@ -49,9 +51,10 @@ def yaml_serializer(state: TrialLoggerAgentState, config: RunnableConfig):
 
 
 # Node
-def json_serializer(state: TrialLoggerAgentState, config: RunnableConfig):
+def json_serializer(
+    trial_dir: str, state: TrialLoggerAgentState, config: RunnableConfig
+):
     """Serialize Python object to JSON string and write to file."""
-    trial_dir = Path(config.get("configurable", {}).get("trial_dir", "trials"))
     trial_name = config.get("metadata", {}).get("trial_name", "Trials_")
     file_path = Path(PurePath(trial_dir, trial_name + ".json"))
     try:
@@ -67,8 +70,7 @@ def json_serializer(state: TrialLoggerAgentState, config: RunnableConfig):
 
 
 # Node
-def call_serializer(state: TrialLoggerAgentState, config: RunnableConfig) -> None:
-    serializer = config.get("configurable", {}).get("serializer", "JSON")
+def call_serializer(serializer: str, state: TrialLoggerAgentState) -> None:
     if Serializer[serializer] == Serializer.JSON:
         return "json_serializer"
     elif Serializer[serializer] == Serializer.YAML:
@@ -89,16 +91,16 @@ class TrialLoggerAgent(Agent):
     def __init__(self):
         super(TrialLoggerAgent, self).__init__(TrialLoggerAgentState)
 
-    def _build_graph(self, graph: StateGraph):
+    def _build_graph(self, graph: StateGraph, trial_dir: str, serializer: str):
 
         # Add nodes
-        graph.add_node("json_serializer", json_serializer)
-        graph.add_node("yaml_serializer", yaml_serializer)
+        graph.add_node("json_serializer", partial(json_serializer, trial_dir))
+        graph.add_node("yaml_serializer", partial(yaml_serializer, trial_dir))
 
         # Add edges to connect nodes
         graph.add_conditional_edges(
             source=START,
-            path=call_serializer,
+            path=partial(call_serializer, serializer),
             path_map=["json_serializer", "yaml_serializer"],
         )
         graph.add_edge("json_serializer", END)
