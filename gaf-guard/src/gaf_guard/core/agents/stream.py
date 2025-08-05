@@ -10,9 +10,9 @@ from pydantic import BaseModel
 
 from gaf_guard.core.agents import Agent
 from gaf_guard.core.decorators import workflow_step
+from gaf_guard.core.models import WorkflowStepMessage
 from gaf_guard.toolkit.enums import MessageType, Role
 from gaf_guard.toolkit.exceptions import HumanInterruptionException
-from gaf_guard.core.models import WorkflowStepMessage
 
 
 PROMPT_GEN = {}
@@ -87,7 +87,7 @@ def load_input_prompts(state: StreamAgentState, config: RunnableConfig):
 
     global PROMPT_GEN
     PROMPT_GEN[config.get("configurable", {}).get("thread_id", "Client_1")] = (
-        (index, prompt["text"]) for index, prompt in enumerate(prompts, start=1)
+        (index, prompt) for index, prompt in enumerate(prompts, start=1)
     )
 
 
