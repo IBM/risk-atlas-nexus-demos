@@ -32,26 +32,29 @@ inference_engine:
       temperature: 0.0
       repeat_penalty: 1
 
+  rits: &rits
+    class: RITSInferenceEngine
+    model_name_or_path: ibm-granite/granite-3.3-8b-instruct
+    credentials:
+      api_key: $RITS_API_KEY
+      api_url: $RITS_API_URL
+    parameters:
+      max_tokens: 1000
+      temperature: 0.0
+
 agents:
   BenchmarkAgent:
-    ground_truth: src/gaf_guard/data/ground_truth/customer_complaints.json
+    ground_truth: examples/data/ground_truth/customer_complaints.json
   TrialLoggerAgent:
-    run_configs:
       trial_dir: trials
       serializer: JSON # YAML, JSON
   OrchestratorAgent:
     RiskGeneratorAgent:
-      inference_engine: *ollama_granite
-      run_configs:  
-        risk_questionnaire_cot: src/gaf_guard/data/chain_of_thought/risk_questionnaire.json
-        risk_generation_cot: src/gaf_guard/data/chain_of_thought/risk_generation.json
+      inference_engine: *rits
     HumanInTheLoopAgent: {}
     StreamAgent: {}
     RisksAssessmentAgent:
       inference_engine: *ollama_guardian
     DriftMonitoringAgent:
       inference_engine: *ollama_llama
-      run_configs:
-        drift_threshold: 2
-        drift_monitoring_cot: src/gaf_guard/data/chain_of_thought/drift_monitoring.json
 
