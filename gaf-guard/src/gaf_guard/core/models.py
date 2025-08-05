@@ -13,4 +13,4 @@ class WorkflowStepMessage(BaseModel):
     step_desc: Optional[str] = None
     content: Optional[Any] = None
     step_kwargs: Dict = {}
-    client_id: Optional[str] = None
+    run_configs: Optional[Dict] = None

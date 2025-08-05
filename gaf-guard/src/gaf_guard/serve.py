@@ -1,10 +1,10 @@
 import logging
 import os
+import uuid
 
-import traceback
+
 os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
 import json
-import uuid
 from collections.abc import AsyncGenerator
 from datetime import datetime
 from functools import reduce
@@ -34,7 +34,6 @@ from gaf_guard.core.agent_builder import AgentBuilder
 from gaf_guard.core.models import WorkflowStepMessage
 from gaf_guard.toolkit.enums import MessageType, Role
 from gaf_guard.toolkit.exceptions import HumanInterruptionException
-from gaf_guard.toolkit.file_utils import extract_run_configs, resolve_file_paths
 from gaf_guard.toolkit.logging import configure_logger
 
 
@@ -50,7 +49,6 @@ console = Console()
 server = Server()
 GAF_GUARD_AGENTS = {}
 CLIENT_CONFIGS = {}
-RUN_CONFIGS = {}
 
 
 @app.callback()
@@ -58,6 +56,7 @@ def main() -> None:
     """
     GAF Guard Server
     """
+
 
 @server.agent(
     name="orchestrator",
@@ -88,18 +87,24 @@ def main() -> None:
 async def orchestrator(
     input: list[Message], context: Context
 ) -> AsyncGenerator[RunYield, RunYieldResume]:
-    
+
     try:
-        message = WorkflowStepMessage(**json.loads(str(reduce(lambda x, y: x + y, input))))
+        message = WorkflowStepMessage(
+            **json.loads(str(reduce(lambda x, y: x + y, input)))
+        )
+
+        # Get run configs
+        RUN_CONFIGS = message.run_configs or {}
 
         # Prepare config parameters
         config = CLIENT_CONFIGS.setdefault(
-            message.client_id,
+            context.session.id,
             {
                 "trial_name": f"Trial_{datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}",
                 "recursion_limit": 100,
-                "run_name": f"GAF-Guard-{uuid.uuid4()}",
-                "configurable": {"thread_id": message.client_id} | RUN_CONFIGS,
+                "run_id": str(uuid.uuid4()),
+                "run_name": f"GAF-Guard-UserIntent",
+                "configurable": {"thread_id": context.session.id} | RUN_CONFIGS,
             },
         )
         if message.step_type == MessageType.HITL_RESPONSE:
@@ -132,7 +137,10 @@ async def orchestrator(
                     await GAF_GUARD_AGENTS["TrialLoggerAgent"].workflow.ainvoke(
                         input=message.model_dump(),
                         config={
-                            "configurable": {"thread_id": 1, "trial_name": config["trial_name"]}
+                            "configurable": {
+                                "thread_id": 1,
+                                "trial_name": config["trial_name"],
+                            }
                             | RUN_CONFIGS
                         },
                     )
@@ -142,8 +150,7 @@ async def orchestrator(
             message=Message(role="agent", parts=[MessagePart(content=str(e))])
         )
     except Exception as e:
-        #LOGGER.error("Internal Server Error: " + str(e))
-        print(traceback.format_exc())
+        LOGGER.error("Internal Server Error: " + str(e))
 
 
 @server.agent(name="benchmark")
@@ -165,21 +172,6 @@ async def run_benchmark(
     )
 
 
-@server.agent(name="trial_logger")
-async def trial_logging(
-    tasks: list[Message], context: Context
-) -> AsyncGenerator[RunYield, RunYieldResume]:
-    for task in tasks:
-        for trial_name, trial_data in json.loads(str(task)).items():
-            await GAF_GUARD_AGENTS["TrialLoggerAgent"].workflow.ainvoke(
-                input=trial_data,
-                config={
-                    "configurable": {"thread_id": 1, "trial_name": trial_name}
-                    | RUN_CONFIGS
-                },
-            )
-
-
 @app.command()
 def serve(config_file):
     os.system("clear")
@@ -190,9 +182,6 @@ def serve(config_file):
         Path(config_file).read_text(),
         Loader=yaml.SafeLoader,
     )
-    resolve_file_paths(server_configs)
-
-    RUN_CONFIGS.update(extract_run_configs(server_configs))
     GAF_GUARD_AGENTS.update(AgentBuilder().build(server_configs["agents"]))
 
     rprint(
@@ -204,7 +193,7 @@ def serve(config_file):
 
     LOGGER.info(f"ACP ver-{acp_sdk.__version__} initialized.")
     LOGGER.info(
-        f"Agent trajectories will be stored in: {Path(RUN_CONFIGS['trial_dir']).absolute()}"
+        f"Agent trajectories will be stored in: {Path(server_configs['agents']['TrialLoggerAgent']['trial_dir']).absolute()}"
     )
     rprint(
         Panel(

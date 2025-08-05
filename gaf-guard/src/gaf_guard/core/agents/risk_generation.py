@@ -15,25 +15,19 @@ from risk_atlas_nexus.library import RiskAtlasNexus
 from typing_extensions import TypedDict
 
 from gaf_guard.core.agents import Agent
-from gaf_guard.templates import RISKS_GENERATION_COT_TEMPLATE
 from gaf_guard.core.decorators import workflow_step
+from gaf_guard.templates import RISKS_GENERATION_COT_TEMPLATE
 
 
 console = Console()
 risk_atlas_nexus = RiskAtlasNexus()
 
 
-# Graph config
-class RiskGenerationConfig(TypedDict):
-    risk_questionnaire_cot: List
-    risk_generation_cot: List
-
-
 # Graph state
 class RiskGenerationState(BaseModel):
     user_intent: str
     domain: Optional[str] = None
-    risk_questionnaire: Optional[List[Dict[str, str]]] = None
+    risk_questionnaire_output: Optional[List[Dict[str, str]]] = None
     identified_risks: Optional[List[str]] = None
     identified_ai_tasks: Optional[List[str]] = None
 
@@ -43,7 +37,7 @@ class RiskGenerationState(BaseModel):
 def get_usecase_domain(
     inference_engine: InferenceEngine,
     state: RiskGenerationState,
-    config: RiskGenerationConfig,
+    config: RunnableConfig,
 ):
     domain = risk_atlas_nexus.identify_domain_from_usecases(
         [state.user_intent], inference_engine, verbose=False
@@ -59,27 +53,30 @@ def generate_zero_shot(
     state: RiskGenerationState,
     config: RunnableConfig,
 ):
-    # load risk questionnaire
-    risk_questionnaire = config.get("configurable", {}).get(
-        "risk_questionnaire_cot", load_resource("risk_questionnaire_cot.json")
+    # load CoT data
+    risk_questionnaire_cot = (
+        config.get("configurable", {})
+        .get("RiskGeneratorAgent", {})
+        .get("risk_questionnaire_cot", load_resource("risk_questionnaire_cot.json"))
     )
+
     responses = risk_atlas_nexus.generate_zero_shot_risk_questionnaire_output(
         state.user_intent,
-        risk_questionnaire,
+        risk_questionnaire_cot[1:],
         inference_engine,
         verbose=False,
     )
 
-    risk_questionnaire = []
-    for question_data, response in zip(risk_questionnaire, responses):
-        risk_questionnaire.append(
+    risk_questionnaire_output = []
+    for question_data, response in zip(risk_questionnaire_cot, responses):
+        risk_questionnaire_output.append(
             {
                 "question": question_data["question"],
                 "answer": response.prediction["answer"],
             }
         )
 
-    return {"risk_questionnaire": risk_questionnaire}
+    return {"risk_questionnaire_output": risk_questionnaire_output}
 
 
 # Node
@@ -92,45 +89,49 @@ def generate_few_shot(
     state: RiskGenerationState,
     config: RunnableConfig,
 ):
-    # load CoT examples for risk questionnaire
-    risk_questionnaire = config.get("configurable", {}).get(
-        "risk_questionnaire_cot", load_resource("risk_questionnaire_cot.json")
+    # load CoT data
+    risk_questionnaire_cot = (
+        config.get("configurable", {})
+        .get("RiskGeneratorAgent", {})
+        .get("risk_questionnaire_cot", load_resource("risk_questionnaire_cot.json"))
     )
 
     responses = risk_atlas_nexus.generate_few_shot_risk_questionnaire_output(
         state.user_intent,
-        risk_questionnaire[1:],
+        risk_questionnaire_cot[1:],
         inference_engine,
         verbose=False,
     )
 
-    risk_questionnaire_responses = []
-    for question_data, response in zip(risk_questionnaire[1:], responses):
-        risk_questionnaire_responses.append(
+    risk_questionnaire_output = []
+    for question_data, response in zip(risk_questionnaire_cot[1:], responses):
+        risk_questionnaire_output.append(
             {
                 "question": question_data["question"],
                 "answer": response.prediction["answer"],
             }
         )
 
-    return {"risk_questionnaire": risk_questionnaire_responses}
+    return {"risk_questionnaire_output": risk_questionnaire_output}
 
 
 # Node
-def is_cot_data_present(state: RiskGenerationState, config: RunnableConfig):
-    risk_questionnaire = config.get("configurable", {}).get(
-        "risk_questionnaire_cot", None
+def if_cot_examples_found(
+    state: RiskGenerationState,
+    config: RunnableConfig,
+):
+    # load CoT data
+    risk_questionnaire_cot = (
+        config.get("configurable", {})
+        .get("RiskGeneratorAgent", {})
+        .get("risk_questionnaire_cot", load_resource("risk_questionnaire_cot.json"))
     )
-    if not risk_questionnaire or (
-        not all(
-            ["cot_examples" in question_data for question_data in risk_questionnaire]
-        )
-    ):
-        raise Exception(
-            "risk_questionnaire_cot must not be None. It must contain `cot_examples` as a list."
-        )
-    elif all(
-        [len(question_data["cot_examples"]) > 0 for question_data in risk_questionnaire]
+
+    if all(
+        [
+            "cot_examples" in question_data and question_data["cot_examples"]
+            for question_data in risk_questionnaire_cot
+        ]
     ):
         return True
     else:
@@ -144,17 +145,21 @@ def identify_risks(
     state: RiskGenerationState,
     config: RunnableConfig,
 ):
+    risk_generation_cot = (
+        config.get("configurable", {})
+        .get("RiskGeneratorAgent", {})
+        .get("risk_generation_cot", None)
+    )
+
     identified_risks = set()
-    if state.risk_questionnaire:
+    if state.risk_questionnaire_output:
         risks: List[Risk] = risk_atlas_nexus.get_all_risks(taxonomy="ibm-risk-atlas")
         prompts = [
             Template(RISKS_GENERATION_COT_TEMPLATE).render(
                 usecase=state.user_intent,
                 question=risk_question_data["question"],
                 answer=risk_question_data["answer"],
-                examples=config.get("configurable", {}).get(
-                    "risk_generation_cot", None
-                ),
+                examples=risk_generation_cot,
                 risks=json.dumps(
                     [
                         {"category": risk.name, "description": risk.description}
@@ -164,7 +169,7 @@ def identify_risks(
                     indent=2,
                 ),
             )
-            for risk_question_data in state.risk_questionnaire
+            for risk_question_data in state.risk_questionnaire_output
         ]
 
         LIST_OF_STR_SCHEMA["items"]["enum"] = [risk.name for risk in risks]
@@ -219,9 +224,7 @@ class RiskGeneratorAgent(Agent):
     )
 
     def __init__(self):
-        super(RiskGeneratorAgent, self).__init__(
-            RiskGenerationState, RiskGenerationConfig
-        )
+        super(RiskGeneratorAgent, self).__init__(RiskGenerationState)
 
     def _build_graph(self, graph: StateGraph, inference_engine: InferenceEngine):
 
@@ -245,11 +248,11 @@ class RiskGeneratorAgent(Agent):
         graph.add_edge(START, "Get AI Domain")
         graph.add_conditional_edges(
             source="Get AI Domain",
-            path=is_cot_data_present,
+            path=if_cot_examples_found,
             path_map={
                 True: "Few Shot Risk Questionnaire Output",
                 False: "Zero Shot Risk Questionnaire Output",
-            }
+            },
         )
         graph.add_edge("Few Shot Risk Questionnaire Output", "Identify AI Risks")
         graph.add_edge("Zero Shot Risk Questionnaire Output", "Identify AI Risks")
