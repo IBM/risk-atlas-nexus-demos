@@ -1,0 +1,100 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "auto_benchmarkcard"
+version = "0.1.0"
+description = "Comprehensive benchmark metadata extraction and validation with LLM-powered analysis"
+readme = "README.md"
+requires-python = "=3.11"
+license = {text = "Apache 2.0"}
+authors = [
+    {name = "Aris Hofmann", email = "aris.hofmann@ibm.com"}
+]
+keywords = ["benchmark", "metadata", "llm", "validation", "ai-risk"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+
+dependencies = [
+    "typer>=0.15.0",
+    "rich>=14.0.0",
+    "python-dotenv>=1.1.0",
+    "tqdm>=4.67.0",
+    "pydantic>=2.11.0",
+    "nest-asyncio>=1.6.0",
+    "langchain>=0.3.25",
+    "langchain-core>=0.3.60",
+    "langchain-community>=0.3.24",
+    "langgraph>=0.6.0",
+    "openai>=1.80.0",
+    "litellm>=1.70.0",
+    "huggingface-hub>=0.32.0",
+    "datasets>=3.6.0",
+    "transformers>=4.50.0",
+    "torch>=2.5.0",
+    "sentence-transformers>=4.0.0",
+    "numpy>=2.0.0",
+    "pandas>=2.2.0",
+    "docling>=2.30.0",
+    "docling-core>=2.30.0",
+    "docling-parse>=4.0.0",
+    "python-docx>=1.1.0",
+    "pypdf>=5.0.0",
+    "chromadb>=1.0.0",
+    "unitxt>=1.20.0",
+    "requests>=2.32.0",
+    "beautifulsoup4>=4.13.0",
+    "httpx>=0.28.0",
+    "matplotlib>=3.10.0",
+    "scipy>=1.15.0",
+    "pyyaml>=6.0.0",
+    "jsonschema>=4.23.0",
+    "filetype>=1.2.0",
+    "pgmpy>=0.1.25",
+    "networkx>=3.4.0",
+    "ollama>=0.5.0",
+    "fact_reasoner @ git+https://github.com/arishofmann/FactReasoner.git",
+    "risk-atlas-nexus[rits]",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+]
+
+[project.scripts]
+auto-benchmarkcard = "auto_benchmarkcard.cli:app"
+
+[project.urls]
+Homepage = "https://github.ibm.com/ai-gov-model-risk/auto-benchmarkcard"
+Repository = "https://github.ibm.com/ai-gov-model-risk/auto-benchmarkcard"
+Documentation = "https://github.ibm.com/ai-gov-model-risk/auto-benchmarkcard/blob/main/README.md"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+auto_benchmarkcard = ["py.typed"]
+
+[tool.black]
+line-length = 100
+target-version = ['py310', 'py311']
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
