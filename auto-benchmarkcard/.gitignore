@@ -41,6 +41,7 @@ env/
 # Output directories
 output/
 factreasoner_cache/
+external/
 
 # Jupyter
 .ipynb_checkpoints/

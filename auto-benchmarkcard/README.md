@@ -100,13 +100,6 @@ Example session directory: `output/hellaswag_2025-01-08_14-30/`
 
 ## Setup Instructions
 
-### Step 1: Clone the Repository
-
-```bash
-git clone https://github.com/your-org/benchmarkmetadata.git
-cd benchmarkmetadata
-```
-
 Create a `.env` file in the root `auto_benchmarkcard/` directory.
 
 The system supports multiple LLM inference engines (configured in `src/auto_benchmarkcard/config.py`):
