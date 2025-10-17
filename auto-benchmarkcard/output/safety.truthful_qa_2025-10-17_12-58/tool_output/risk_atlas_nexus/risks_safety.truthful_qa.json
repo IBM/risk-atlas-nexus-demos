@@ -1,0 +1,57 @@
+{
+  "benchmark": "safety.truthful_qa",
+  "risks_identified": 5,
+  "taxonomy": "ibm-risk-atlas",
+  "risks": [
+    {
+      "category": "Evasion attack",
+      "description": [
+        "Evasion attacks attempt to make a model output incorrect results by slightly perturbing the input data sent to the trained model."
+      ],
+      "type": "inference",
+      "concern": "Evasion attacks alter model behavior, usually to benefit the attacker.",
+      "url": "https://www.ibm.com/docs/en/watsonx/saas?topic=SSYOK8/wsj/ai-risk-atlas/evasion-attack.html",
+      "taxonomy": "ibm-risk-atlas"
+    },
+    {
+      "category": "Impact on the environment",
+      "description": [
+        "AI, and large generative models in particular, might produce increased carbon emissions and increase water usage for their training and operation."
+      ],
+      "type": "non-technical",
+      "concern": "Training and operating large AI models, building data centers, and manufacturing specialized hardware for AI can consume large amounts of water and energy, which contributes to carbon emissions. Additionally, water resources that are used for cooling AI data center servers can no longer be allocated for other necessary uses. If not managed, these could exacerbate climate change.\u00a0",
+      "url": "https://www.ibm.com/docs/en/watsonx/saas?topic=SSYOK8/wsj/ai-risk-atlas/impact-on-the-environment.html",
+      "taxonomy": "ibm-risk-atlas"
+    },
+    {
+      "category": "Incorrect risk testing",
+      "description": [
+        "A metric selected to measure or track a risk is incorrectly selected, incompletely measuring the risk, or measuring the wrong risk for the given context."
+      ],
+      "type": "non-technical",
+      "concern": "If the metrics do not measure the risk as intended, then the understanding of that risk will be incorrect and mitigations might not be applied. If the model\u2019s output is consequential, this might result in societal, reputational, or financial harm.",
+      "url": "https://www.ibm.com/docs/en/watsonx/saas?topic=SSYOK8/wsj/ai-risk-atlas/incorrect-risk-testing.html",
+      "taxonomy": "ibm-risk-atlas"
+    },
+    {
+      "category": "Membership inference attack",
+      "description": [
+        "A membership inference attack repeatedly queries a model to determine if a given input was part of the model\u2019s training. More specifically, given a trained model and a data sample, an attacker appropriately samples the input space, observing outputs to deduce whether that sample was part of the model\u2019s training."
+      ],
+      "type": "inference",
+      "concern": "Identifying whether a data sample was used for training data can reveal what data was used to train a model, possibly giving competitors insight into how a model was trained and the opportunity to replicate the model or tamper with it. Models that include publicly-available data are at higher risk of such attacks.",
+      "url": "https://www.ibm.com/docs/en/watsonx/saas?topic=SSYOK8/wsj/ai-risk-atlas/membership-inference-attack.html",
+      "taxonomy": "ibm-risk-atlas"
+    },
+    {
+      "category": "Confidential data in prompt",
+      "description": [
+        "Confidential information might be included as a part of the prompt that is sent to the model."
+      ],
+      "type": "inference",
+      "concern": "If not properly developed to secure confidential data, the model might reveal confidential information or IP in the generated output. Additionally, end users' confidential information might be unintentionally collected and stored.",
+      "url": "https://www.ibm.com/docs/en/watsonx/saas?topic=SSYOK8/wsj/ai-risk-atlas/confidential-data-in-prompt.html",
+      "taxonomy": "ibm-risk-atlas"
+    }
+  ]
+}
