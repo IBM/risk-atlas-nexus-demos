@@ -3,12 +3,14 @@
 We present Auto-BenchmarkCard, a workflow for generating validated descriptions of AI benchmarks. Benchmark documentation is often incomplete or inconsistent, making it difficult to interpret and compare benchmarks across tasks or domains. Auto-BenchmarkCard addresses this gap by combining multi-agent data extraction from heterogeneous sources (e.g., Hugging Face, Unitxt, academic papers) with LLM-driven synthesis. A subsequent validation phase evaluates factual accuracy through atomic entailment scoring using the FactReasoner tool. The workflow promotes transparency, comparability, and reusability in AI benchmark reporting, enabling researchers and practitioners to better navigate and evaluate benchmark choices.
 
 
-![image](https://github.ibm.com/ai-gov-model-risk/auto-benchmarkcard/assets/456558/c76a7060-7479-470a-a802-60d3f26fe82c)
+
+<img width="1050" height="335" alt="Bildschirmfoto 2025-10-17 um 10 38 52" src="https://github.com/user-attachments/assets/c4c1992e-b0c9-4a3c-bc5a-89716b9ff215" />
+
 
 
 ---
 
-The system automates the creation of comprehensive benchmark documentation through a three-phase workflow orchestrated by workflow.py using LangGraph.
+The system automates the creation of benchmark documentation through a three-phase workflow.
 
 **Extraction Phase:** The workflow aggregates metadata from multiple sources including Unitxt, Hugging Face, and academic papers, extracting benchmark identifiers, dataset information, and documentation.
 
