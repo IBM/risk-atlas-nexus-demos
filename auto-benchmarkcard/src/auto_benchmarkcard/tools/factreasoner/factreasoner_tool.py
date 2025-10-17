@@ -41,6 +41,125 @@ from fact_reasoner.nli_extractor import NLIExtractor
 logger = logging.getLogger(__name__)
 
 
+def fixed_predict_nli_relationships(
+    object_pairs, nli_extractor, links_type="context_atom", text_only=True
+):
+    """Fix for the original predict_nli_relationships function.
+
+    The original FactReasoner function was passing context IDs (like "c_a0_0")
+    instead of actual text to the NLI model, causing comparison failures. This
+    fix resolves IDs to actual objects and extracts their text content.
+
+    Args:
+        object_pairs: List of (context, atom) tuples for NLI comparison
+        nli_extractor: NLIExtractor instance for entailment prediction
+        links_type: Relationship type label (default: "context_atom")
+        text_only: Unused parameter kept for compatibility
+
+    Returns:
+        List of Relation objects with entailment labels and probabilities
+
+    Raises:
+        AssertionError: If nli_extractor is None
+    """
+    assert nli_extractor is not None, "NLI extractor cannot be None."
+
+    # Find the FactReasoner instance that has our contexts and atoms
+    import inspect
+
+    pipeline = None
+    frame = inspect.currentframe()
+
+    while frame:
+        if "self" in frame.f_locals and hasattr(frame.f_locals["self"], "contexts"):
+            pipeline = frame.f_locals["self"]
+            break
+        frame = frame.f_back
+
+    premises = []
+    hypotheses = []
+
+    # Process each context-atom pair
+    for pair in object_pairs:
+        # Get text from the context (premise)
+        premise = _get_text_from_object(pair[0], pipeline, "contexts")
+        # Get text from the atom (hypothesis)
+        hypothesis = _get_text_from_object(pair[1], pipeline, "atoms")
+
+        premises.append(premise)
+        hypotheses.append(hypothesis)
+
+    # Run the NLI model with actual text content
+    results = nli_extractor.runall(premises, hypotheses)
+
+    # Create relation objects with proper references
+    relations = []
+    for i, result in enumerate(results):
+        # Make sure we pass actual objects (not IDs) to the Relation constructor
+        source_obj = _get_actual_object(object_pairs[i][0], pipeline, "contexts")
+        target_obj = _get_actual_object(object_pairs[i][1], pipeline, "atoms")
+
+        relation = Relation(
+            source=source_obj,
+            target=target_obj,
+            type=result["label"],
+            probability=result["probability"],
+            link=links_type or "unknown",
+        )
+        relations.append(relation)
+
+    return relations
+
+
+def _get_text_from_object(obj, pipeline, collection_name):
+    """Extract text content from an object or resolve ID to text.
+
+    Args:
+        obj: Either an object with text attribute or an ID string
+        pipeline: FactReasoner pipeline instance containing collections
+        collection_name: Name of collection to search ("contexts" or "atoms")
+
+    Returns:
+        Text content as string
+    """
+    if isinstance(obj, str) and pipeline:
+        # It's an ID like "c_a0_0" - look up the actual object
+        collection = getattr(pipeline, collection_name, {})
+        if obj in collection:
+            real_obj = collection[obj]
+            return getattr(real_obj, "text", str(real_obj))
+        return obj  # Just use the string if we can't find it
+    else:
+        # It's already an object - get its text
+        if hasattr(obj, "text") and obj.text:
+            return obj.text
+        elif hasattr(obj, "get_text"):
+            return obj.get_text()
+        return str(obj)
+
+
+def _get_actual_object(obj, pipeline, collection_name):
+    """Convert ID string to actual object reference.
+
+    Args:
+        obj: Either an object or an ID string
+        pipeline: FactReasoner pipeline instance containing collections
+        collection_name: Name of collection to search ("contexts" or "atoms")
+
+    Returns:
+        Actual object from collection or original obj if not found
+    """
+    if isinstance(obj, str) and pipeline:
+        # Look up the real object by ID
+        collection = getattr(pipeline, collection_name, {})
+        return collection.get(obj, obj)
+    return obj
+
+
+# Apply the fix by replacing the original function
+fact_utils.predict_nli_relationships = fixed_predict_nli_relationships
+
+
 def _create_atom_marginal_mappings(
     formatted_rag_results: Dict[str, Any], marginals: List[Dict[str, Any]]
 ) -> tuple[Dict[str, Any], Dict[str, Any]]:

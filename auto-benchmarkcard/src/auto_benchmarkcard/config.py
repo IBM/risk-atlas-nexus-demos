@@ -27,7 +27,7 @@ class Config:
 
     # Processing Configuration
     DEFAULT_FACTUALITY_THRESHOLD: float = 0.8
-    DEFAULT_TOP_K: int = 3
+    DEFAULT_TOP_K: int = 4
 
     # RAG Configuration
     ENABLE_LLM_RERANKING: bool = True
