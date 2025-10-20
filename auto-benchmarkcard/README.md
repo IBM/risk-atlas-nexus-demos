@@ -114,10 +114,9 @@ Set `LLM_ENGINE_TYPE` in `config.py` to switch between engines.
 
 **Example for RITS:**
 ```bash
-RITS_API_KEY=XXX
-RITS_MODEL=meta-llama/llama-3-3-70b-instruct
-RITS_API_URL=https://inference-3scale-apicast-production.apps.rits.fmaas.res.ibm.com/llama-3-3-70b-instruct
-RITS_API_URL_RISK_ATLAS=https://inference-3scale-apicast-production.apps.rits.fmaas.res.ibm.com
+RITS_API_KEY=<RITS_API_KEY>
+RITS_MODEL=<YOUR_MODEL>
+RITS_API_URL=<RITS_API_URL>
 ```
 
 Install the package:

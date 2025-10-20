@@ -97,7 +97,7 @@ def create_inference_engine():
             model_name="ibm/granite-20b-code-instruct",
             credentials={
                 "api_key": os.getenv("RITS_API_KEY"),
-                "api_url": os.getenv("RITS_API_URL_RISK_ATLAS"),
+                "api_url": os.getenv("RITS_API_URL"),
             },
             parameters={"max_completion_tokens": 1000, "temperature": 0.7},
             verbose=False  # Disable progress bars for cleaner output
@@ -110,7 +110,7 @@ def create_inference_engine():
     except Exception as e:
         logger.warning("Failed to create RITS inference engine: %s", e)
         logger.warning(
-            "Risk identification will be skipped. Set RITS_API_KEY and RITS_API_URL_RISK_ATLAS environment variables."
+            "Risk identification will be skipped. Set RITS_API_KEY and RITS_API_URL environment variables."
         )
         return None
 
