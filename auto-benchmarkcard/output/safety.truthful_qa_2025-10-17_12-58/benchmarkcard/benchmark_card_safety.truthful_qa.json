@@ -1,0 +1,142 @@
+{
+  "benchmark_card": {
+    "benchmark_details": {
+      "name": "safety.truthful_qa",
+      "overview": "TruthfulQA is a benchmark to measure whether a language model is truthful in generating answers to questions. The benchmark comprises 817 questions that span 38 categories, including health, law, finance, and politics. We crafted questions that some humans would answer falsely due to a false belief or misconception. To perform well, models must avoid generating false answers learned from imitating human texts.",
+      "data_type": "text",
+      "domains": [
+        "natural language understanding",
+        "question answering",
+        "truthfulness"
+      ],
+      "languages": [
+        "English"
+      ],
+      "similar_benchmarks": [
+        "GLUE",
+        "SuperGLUE",
+        "XTREME",
+        "BigBench"
+      ],
+      "resources": [
+        "https://github.com/sylinrl/TruthfulQA",
+        "https://arxiv.org/abs/2109.07958"
+      ]
+    },
+    "purpose_and_intended_users": {
+      "goal": "To create a benchmark for measuring the truthfulness of language models, specifically their ability to avoid generating false statements that mimic human misconceptions and false beliefs.",
+      "audience": [
+        "NLP researchers",
+        "AI developers",
+        "Truthfulness assessment teams"
+      ],
+      "tasks": [
+        "Question answering",
+        "Text generation",
+        "Truthfulness evaluation"
+      ],
+      "limitations": "The benchmark only evaluates language models on their ability to generate truthful answers to a specific set of questions, and does not assess their performance on other tasks or in different contexts.",
+      "out_of_scope_uses": [
+        "Using the benchmark to evaluate models on tasks other than question answering or text generation",
+        "Using the benchmark to assess models' performance in contexts other than those specified in the metadata"
+      ]
+    },
+    "data": {
+      "source": "Collected from diverse sources including research papers (Lin et al., 2021; Askell et al., 2021; Nakano et al., 2021) and metadata from Hugging Face (https://huggingface.co/)",
+      "size": "817 total examples across 38 categories with train/dev/test splits varying by task",
+      "format": "JSON format with task-specific fields including question, answer, and metadata",
+      "annotation": "Professional annotators and crowdsourcing with quality control, inter-annotator agreement validation, and expert review"
+    },
+    "methodology": {
+      "methods": [
+        "fine-tuning on human evaluations of truthfulness",
+        "automatic metric GPT-judge",
+        "human evaluation"
+      ],
+      "metrics": [
+        "accuracy",
+        "F1-score",
+        "thresholded truth score"
+      ],
+      "calculation": "Truthfulness is calculated as the percentage of answers that are true, and informativeness is calculated as the percentage of answers that are informative.",
+      "interpretation": "The results are interpreted in terms of the models' ability to provide truthful and informative answers, with the goal of identifying the most truthful and informative model. The models are evaluated on their ability to distinguish between true and false statements, with a focus on imitative falsehoods.",
+      "baseline_results": "The best model was truthful on 58% of questions, while human performance was 94%. Models generated many false answers that mimic popular misconceptions and have the potential to deceive humans.",
+      "validation": "The validation process involves verifying the answers against reliable sources, with a focus on evaluating the models' ability to provide truthful and informative answers."
+    },
+    "ethical_and_legal_considerations": {
+      "privacy_and_anonymity": "TruthfulQA is a benchmark that tests language models on generating truthful answers to questions. The dataset consists of 817 questions that span 38 categories, including health, law, finance, and politics. The questions are designed to elicit imitative falsehoods, which are false statements with high likelihood on the training distribution. The goal of the benchmark is to measure the truthfulness of a model, with a strict standard where a claim counts as true if it describes the literal truth about the real world.",
+      "data_licensing": "Apache License, Version 2.0",
+      "consent_procedures": "Not specified",
+      "compliance_with_regulations": "Not specified"
+    },
+    "possible_risks": [
+      {
+        "category": "Evasion attack",
+        "description": [
+          "Evasion attacks attempt to make a model output incorrect results by slightly perturbing the input data sent to the trained model."
+        ],
+        "type": "inference",
+        "concern": "Evasion attacks alter model behavior, usually to benefit the attacker.",
+        "url": "https://www.ibm.com/docs/en/watsonx/saas?topic=SSYOK8/wsj/ai-risk-atlas/evasion-attack.html",
+        "taxonomy": "ibm-risk-atlas"
+      },
+      {
+        "category": "Impact on the environment",
+        "description": [
+          "AI, and large generative models in particular, might produce increased carbon emissions and increase water usage for their training and operation."
+        ],
+        "type": "non-technical",
+        "concern": "Training and operating large AI models, building data centers, and manufacturing specialized hardware for AI can consume large amounts of water and energy, which contributes to carbon emissions. Additionally, water resources that are used for cooling AI data center servers can no longer be allocated for other necessary uses. If not managed, these could exacerbate climate change.\u00a0",
+        "url": "https://www.ibm.com/docs/en/watsonx/saas?topic=SSYOK8/wsj/ai-risk-atlas/impact-on-the-environment.html",
+        "taxonomy": "ibm-risk-atlas"
+      },
+      {
+        "category": "Incorrect risk testing",
+        "description": [
+          "A metric selected to measure or track a risk is incorrectly selected, incompletely measuring the risk, or measuring the wrong risk for the given context."
+        ],
+        "type": "non-technical",
+        "concern": "If the metrics do not measure the risk as intended, then the understanding of that risk will be incorrect and mitigations might not be applied. If the model\u2019s output is consequential, this might result in societal, reputational, or financial harm.",
+        "url": "https://www.ibm.com/docs/en/watsonx/saas?topic=SSYOK8/wsj/ai-risk-atlas/incorrect-risk-testing.html",
+        "taxonomy": "ibm-risk-atlas"
+      },
+      {
+        "category": "Membership inference attack",
+        "description": [
+          "A membership inference attack repeatedly queries a model to determine if a given input was part of the model\u2019s training. More specifically, given a trained model and a data sample, an attacker appropriately samples the input space, observing outputs to deduce whether that sample was part of the model\u2019s training."
+        ],
+        "type": "inference",
+        "concern": "Identifying whether a data sample was used for training data can reveal what data was used to train a model, possibly giving competitors insight into how a model was trained and the opportunity to replicate the model or tamper with it. Models that include publicly-available data are at higher risk of such attacks.",
+        "url": "https://www.ibm.com/docs/en/watsonx/saas?topic=SSYOK8/wsj/ai-risk-atlas/membership-inference-attack.html",
+        "taxonomy": "ibm-risk-atlas"
+      },
+      {
+        "category": "Confidential data in prompt",
+        "description": [
+          "Confidential information might be included as a part of the prompt that is sent to the model."
+        ],
+        "type": "inference",
+        "concern": "If not properly developed to secure confidential data, the model might reveal confidential information or IP in the generated output. Additionally, end users' confidential information might be unintentionally collected and stored.",
+        "url": "https://www.ibm.com/docs/en/watsonx/saas?topic=SSYOK8/wsj/ai-risk-atlas/confidential-data-in-prompt.html",
+        "taxonomy": "ibm-risk-atlas"
+      }
+    ],
+    "flagged_fields": {
+      "benchmark_details.similar_benchmarks": "[Possible Hallucination], no supporting evidence found in source material",
+      "benchmark_details.resources": "[Possible Hallucination], no supporting evidence found in source material",
+      "data.source": "[Possible Hallucination], no supporting evidence found in source material",
+      "data.size": "[Factuality Score: 0.76], low factual alignment with source material",
+      "data.format": "[Possible Hallucination], no supporting evidence found in source material",
+      "data.annotation": "[Factuality Score: 0.78], low factual alignment with source material",
+      "methodology.metrics": "[Possible Hallucination], no supporting evidence found in source material"
+    },
+    "missing_fields": [
+      "ethical_and_legal_considerations.consent_procedures",
+      "ethical_and_legal_considerations.compliance_with_regulations"
+    ],
+    "card_info": {
+      "created_at": "2025-10-17T13:02:13.400865",
+      "llm": "llama-3.3-70b-instruct"
+    }
+  }
+}
