@@ -1,6 +1,7 @@
 {
-  "extends": "../tsconfig.base.json",
+  "extends": "./tsconfig.base.json",
   "compileOnSave": false,
+  "allowSyntheticDefaultImports": true,
   "include": ["src"],
   "compilerOptions": {
     "jsx": "react-jsx",

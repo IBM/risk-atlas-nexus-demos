@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@carbon/react": "^1.88.0",
-    "@carbon/styles": "^1.87.0",
+    "@carbon/styles": "^1.88.0",
     "@carbon/web-components": "^2.35.0",
     "@react-sigma/core": "^5.0.1",
     "@sigma/node-image": ">=3.0.0",
