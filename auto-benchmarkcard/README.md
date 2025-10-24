@@ -25,7 +25,9 @@ Each component acts as a "worker" in the LangGraph workflow, with graph state up
 ## Tools Overview
 
 ### Unitxt Tool
-- Fetches benchmark metadata and all referenced components (metrics, templates, etc.)
+- Fetches benchmark metadata from the Unitxt catalog, a unified framework providing standardized NLP benchmarks
+- Retrieves all referenced components including metrics, templates, datasets, and task definitions
+- Supports hundreds of benchmarks spanning classification, QA, NLI, summarization, and other NLP tasks
 - Caches results for efficiency
 
 ### Extractor Tool
@@ -208,7 +210,14 @@ auto-benchmarkcard process glue --debug
 
 ### Batch Processing
 
-Process multiple benchmarks sequentially using the batch script:
+The batch script (`scripts/batch_process.py`) processes multiple benchmarks from the Unitxt catalog sequentially. Unitxt is a unified framework that provides a standardized catalog of NLP benchmarks spanning various tasks and domains (classification, QA, NLI, etc.).
+
+The script provides:
+- **Automatic catalog discovery**: Loads all benchmark cards from the Unitxt catalog using `get_catalog_items("cards")`
+- **Progress tracking**: Shows real-time success rates and completion statistics
+- **Smart skipping**: Automatically skips already processed benchmarks (unless `--no-skip` is specified)
+- **Error handling**: Saves failed benchmarks and error messages to a JSON file for review
+- **Summary statistics**: Generates detailed reports including success rates, runtime, and failure logs
 
 ```bash
 python scripts/batch_process.py
