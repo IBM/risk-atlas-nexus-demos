@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compileOnSave": false,
+  "allowSyntheticDefaultImports": true,
+  "include": ["src"],
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "rootDir": "./src",
+    "outDir": "build",
+    "declarationDir": null,
+    "declaration": false,
+    "noImplicitAny": false
+  }
+}

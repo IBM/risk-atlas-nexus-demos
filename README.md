@@ -37,6 +37,7 @@ Note that all contributions to this project are [released][released] to the publ
 | [Auto-BenchmarkCard](https://github.com/IBM/risk-atlas-nexus-demos/tree/main/auto-benchmarkcard) | benchmark documentation, LLM, risk identification, fact-checking | Automated workflow for generating validated AI benchmark documentation with multi-agent data extraction, LLM-driven synthesis, and factuality verification.|
 | [Gaf-Guard](https://github.com/IBM/risk-atlas-nexus-demos/tree/main/gaf-guard) | risk management, AI agents, | GAF-Guard is an AI framework that can effectively detect and manage risks associated with LLMs for a given use-case.|
 | [Neo4j-Db ](https://github.com/IBM/risk-atlas-nexus-demos/tree/main/neo4j-db) |neo4j, Docker | Set up a docker container with an instance of neo4j community and import the data from Risk Atlas Nexus into it. |
+| [Risk Atlas Nexus Graph Visualisation ](https://github.com/IBM/risk-atlas-nexus-demos/tree/main/ran-viz) |python, sigmajs, viz, ui | Export Risk Atlas Nexus content for a sigmajs graph and display it in the UI. |
 
 
 ## License
