@@ -39,7 +39,7 @@ uv pip install -r requirements.txt
 Create the content that will be displayed in the graph
 
 ```commandline
-uv python app.py
+uv run app.py
 ```
 
 The output should be available as a json file 
