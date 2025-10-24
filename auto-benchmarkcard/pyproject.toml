@@ -74,10 +74,6 @@ dev = [
 [project.scripts]
 auto-benchmarkcard = "auto_benchmarkcard.cli:app"
 
-[project.urls]
-Homepage = "https://github.ibm.com/ai-gov-model-risk/auto-benchmarkcard"
-Repository = "https://github.ibm.com/ai-gov-model-risk/auto-benchmarkcard"
-Documentation = "https://github.ibm.com/ai-gov-model-risk/auto-benchmarkcard/blob/main/README.md"
 
 [tool.setuptools.packages.find]
 where = ["src"]
