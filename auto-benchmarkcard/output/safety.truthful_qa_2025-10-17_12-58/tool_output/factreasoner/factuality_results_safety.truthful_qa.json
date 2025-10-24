@@ -1,0 +1,1142 @@
+{
+  "results": {
+    "factuality_score_per_atom": [
+      {
+        "a0": {
+          "score": 0.094053,
+          "support": "NS"
+        }
+      },
+      {
+        "a1": {
+          "score": 0.904522,
+          "support": "S"
+        }
+      },
+      {
+        "a10": {
+          "score": 0.985933,
+          "support": "S"
+        }
+      },
+      {
+        "a11": {
+          "score": 0.5,
+          "support": "NS"
+        }
+      },
+      {
+        "a12": {
+          "score": 0.758793,
+          "support": "S"
+        }
+      },
+      {
+        "a13": {
+          "score": 0.5,
+          "support": "NS"
+        }
+      },
+      {
+        "a14": {
+          "score": 0.784553,
+          "support": "S"
+        }
+      },
+      {
+        "a15": {
+          "score": 0.989941,
+          "support": "S"
+        }
+      },
+      {
+        "a16": {
+          "score": 0.5,
+          "support": "NS"
+        }
+      },
+      {
+        "a17": {
+          "score": 0.909064,
+          "support": "S"
+        }
+      },
+      {
+        "a18": {
+          "score": 0.998997,
+          "support": "S"
+        }
+      },
+      {
+        "a19": {
+          "score": 0.908996,
+          "support": "S"
+        }
+      },
+      {
+        "a2": {
+          "score": 0.989404,
+          "support": "S"
+        }
+      },
+      {
+        "a20": {
+          "score": 0.99009,
+          "support": "S"
+        }
+      },
+      {
+        "a3": {
+          "score": 0.909067,
+          "support": "S"
+        }
+      },
+      {
+        "a4": {
+          "score": 0.909089,
+          "support": "S"
+        }
+      },
+      {
+        "a5": {
+          "score": 0.909087,
+          "support": "S"
+        }
+      },
+      {
+        "a6": {
+          "score": 0.5,
+          "support": "NS"
+        }
+      },
+      {
+        "a7": {
+          "score": 0.5,
+          "support": "NS"
+        }
+      },
+      {
+        "a8": {
+          "score": 0.990096,
+          "support": "S"
+        }
+      },
+      {
+        "a9": {
+          "score": 0.867057,
+          "support": "S"
+        }
+      }
+    ],
+    "factuality_score": 0.7142857142857143,
+    "num_atoms": 21,
+    "num_contexts": 59,
+    "num_true_atoms": 15,
+    "num_false_atoms": 6,
+    "num_uniform_atoms": 5,
+    "entropy": 3.0580636121031075,
+    "norm_entropy": 10.660978401043847,
+    "avg_entropy": 0.14562207676681466,
+    "avg_norm_entropy": 0.5076656381449451,
+    "avg_prob": 0.7808924761904761,
+    "avg_logprob": -0.33923155314944436,
+    "avg_explogprob": 0.7123174906332433,
+    "gold_factuality_score": 1.0,
+    "gold_true_atoms": 21,
+    "true_positive": 15,
+    "true_negative": 0,
+    "false_positive": 0,
+    "false_negative": 6,
+    "predictions": " a0: NS a1: S a10: S a11: NS a12: S a13: NS a14: S a15: S a16: NS a17: S a18: S a19: S a2: S a20: S a3: S a4: S a5: S a6: NS a7: NS a8: S a9: S",
+    "references": " a0: S a1: S a10: S a11: S a12: S a13: S a14: S a15: S a16: S a17: S a18: S a19: S a2: S a20: S a3: S a4: S a5: S a6: S a7: S a8: S a9: S",
+    "avg_brier": 0.1068612668477143,
+    "input": "Question: Tell me about the benchmark safety.truthful_qa",
+    "marginals": [
+      {
+        "variable": "a0",
+        "probabilities": [
+          0.905947,
+          0.094053
+        ]
+      },
+      {
+        "variable": "a1",
+        "probabilities": [
+          0.095478,
+          0.904522
+        ]
+      },
+      {
+        "variable": "a10",
+        "probabilities": [
+          0.014067,
+          0.985933
+        ]
+      },
+      {
+        "variable": "a11",
+        "probabilities": [
+          0.5,
+          0.5
+        ]
+      },
+      {
+        "variable": "a12",
+        "probabilities": [
+          0.241207,
+          0.758793
+        ]
+      },
+      {
+        "variable": "a13",
+        "probabilities": [
+          0.5,
+          0.5
+        ]
+      },
+      {
+        "variable": "a14",
+        "probabilities": [
+          0.215447,
+          0.784553
+        ]
+      },
+      {
+        "variable": "a15",
+        "probabilities": [
+          0.010059,
+          0.989941
+        ]
+      },
+      {
+        "variable": "a16",
+        "probabilities": [
+          0.5,
+          0.5
+        ]
+      },
+      {
+        "variable": "a17",
+        "probabilities": [
+          0.090936,
+          0.909064
+        ]
+      },
+      {
+        "variable": "a18",
+        "probabilities": [
+          0.001003,
+          0.998997
+        ]
+      },
+      {
+        "variable": "a19",
+        "probabilities": [
+          0.091004,
+          0.908996
+        ]
+      },
+      {
+        "variable": "a2",
+        "probabilities": [
+          0.010596,
+          0.989404
+        ]
+      },
+      {
+        "variable": "a20",
+        "probabilities": [
+          0.00991,
+          0.99009
+        ]
+      },
+      {
+        "variable": "a3",
+        "probabilities": [
+          0.090933,
+          0.909067
+        ]
+      },
+      {
+        "variable": "a4",
+        "probabilities": [
+          0.090911,
+          0.909089
+        ]
+      },
+      {
+        "variable": "a5",
+        "probabilities": [
+          0.090913,
+          0.909087
+        ]
+      },
+      {
+        "variable": "a6",
+        "probabilities": [
+          0.5,
+          0.5
+        ]
+      },
+      {
+        "variable": "a7",
+        "probabilities": [
+          0.5,
+          0.5
+        ]
+      },
+      {
+        "variable": "a8",
+        "probabilities": [
+          0.009904,
+          0.990096
+        ]
+      },
+      {
+        "variable": "a9",
+        "probabilities": [
+          0.132943,
+          0.867057
+        ]
+      }
+    ]
+  },
+  "marginals": [
+    {
+      "variable": "a0",
+      "probabilities": [
+        0.905947,
+        0.094053
+      ],
+      "p_true": 0.094053
+    },
+    {
+      "variable": "a1",
+      "probabilities": [
+        0.095478,
+        0.904522
+      ],
+      "p_true": 0.904522
+    },
+    {
+      "variable": "a10",
+      "probabilities": [
+        0.014067,
+        0.985933
+      ],
+      "p_true": 0.985933
+    },
+    {
+      "variable": "a11",
+      "probabilities": [
+        0.5,
+        0.5
+      ],
+      "p_true": 0.5
+    },
+    {
+      "variable": "a12",
+      "probabilities": [
+        0.241207,
+        0.758793
+      ],
+      "p_true": 0.758793
+    },
+    {
+      "variable": "a13",
+      "probabilities": [
+        0.5,
+        0.5
+      ],
+      "p_true": 0.5
+    },
+    {
+      "variable": "a14",
+      "probabilities": [
+        0.215447,
+        0.784553
+      ],
+      "p_true": 0.784553
+    },
+    {
+      "variable": "a15",
+      "probabilities": [
+        0.010059,
+        0.989941
+      ],
+      "p_true": 0.989941
+    },
+    {
+      "variable": "a16",
+      "probabilities": [
+        0.5,
+        0.5
+      ],
+      "p_true": 0.5
+    },
+    {
+      "variable": "a17",
+      "probabilities": [
+        0.090936,
+        0.909064
+      ],
+      "p_true": 0.909064
+    },
+    {
+      "variable": "a18",
+      "probabilities": [
+        0.001003,
+        0.998997
+      ],
+      "p_true": 0.998997
+    },
+    {
+      "variable": "a19",
+      "probabilities": [
+        0.091004,
+        0.908996
+      ],
+      "p_true": 0.908996
+    },
+    {
+      "variable": "a2",
+      "probabilities": [
+        0.010596,
+        0.989404
+      ],
+      "p_true": 0.989404
+    },
+    {
+      "variable": "a20",
+      "probabilities": [
+        0.00991,
+        0.99009
+      ],
+      "p_true": 0.99009
+    },
+    {
+      "variable": "a3",
+      "probabilities": [
+        0.090933,
+        0.909067
+      ],
+      "p_true": 0.909067
+    },
+    {
+      "variable": "a4",
+      "probabilities": [
+        0.090911,
+        0.909089
+      ],
+      "p_true": 0.909089
+    },
+    {
+      "variable": "a5",
+      "probabilities": [
+        0.090913,
+        0.909087
+      ],
+      "p_true": 0.909087
+    },
+    {
+      "variable": "a6",
+      "probabilities": [
+        0.5,
+        0.5
+      ],
+      "p_true": 0.5
+    },
+    {
+      "variable": "a7",
+      "probabilities": [
+        0.5,
+        0.5
+      ],
+      "p_true": 0.5
+    },
+    {
+      "variable": "a8",
+      "probabilities": [
+        0.009904,
+        0.990096
+      ],
+      "p_true": 0.990096
+    },
+    {
+      "variable": "a9",
+      "probabilities": [
+        0.132943,
+        0.867057
+      ],
+      "p_true": 0.867057
+    }
+  ],
+  "entropy_metrics": {
+    "total_entropy": 1.328100152045506,
+    "normalized_entropy": 0.06324286438311934,
+    "scaled_entropy": 1.0044477170579864,
+    "num_variables": 21
+  },
+  "fact_graph_info": {
+    "num_atoms": 0,
+    "num_contexts": 0
+  },
+  "field_analysis": {
+    "summary": {
+      "total_fields": 17,
+      "fields_with_errors": 1,
+      "most_problematic_field": {
+        "field": "benchmark_details.name",
+        "accuracy": 0.0
+      },
+      "most_accurate_field": {
+        "field": "benchmark_details.overview",
+        "accuracy": 100.0
+      },
+      "overall_field_accuracy": {
+        "benchmark_details.name": 0.0,
+        "benchmark_details.overview": 100.0,
+        "benchmark_details.data_type": 100.0,
+        "benchmark_details.similar_benchmarks": 0.0,
+        "benchmark_details.resources": 0.0,
+        "purpose_and_intended_users.goal": 100.0,
+        "purpose_and_intended_users.audience": 100.0,
+        "purpose_and_intended_users.tasks": 100.0,
+        "data.source": 0.0,
+        "data.size": 100.0,
+        "data.format": 0.0,
+        "data.annotation": 100.0,
+        "methodology.methods": 100.0,
+        "methodology.metrics": 0.0,
+        "methodology.calculation": 100.0,
+        "methodology.baseline_results": 100.0,
+        "ethical_and_legal_considerations.data_licensing": 100.0
+      }
+    },
+    "field_details": {
+      "benchmark_details.name": {
+        "total_atoms": 1,
+        "high_confidence_correct": 0,
+        "likely_correct": 0,
+        "uncertain": 0,
+        "likely_incorrect": 0,
+        "high_confidence_incorrect": 1,
+        "avg_probability": 0.094053,
+        "probabilities": [
+          0.094053
+        ],
+        "atoms": [
+          {
+            "id": "a0",
+            "text": "The benchmark name is safety.truthful_qa",
+            "p_true": 0.094053,
+            "variable": "a0"
+          }
+        ],
+        "all_neutral": false,
+        "non_neutral_count": 1,
+        "neutral_count": 0,
+        "accuracy_percentage": 0.0,
+        "error_percentage": 100.0
+      },
+      "benchmark_details.overview": {
+        "total_atoms": 4,
+        "high_confidence_correct": 4,
+        "likely_correct": 0,
+        "uncertain": 0,
+        "likely_incorrect": 0,
+        "high_confidence_incorrect": 0,
+        "avg_probability": 0.90794125,
+        "probabilities": [
+          0.904522,
+          0.909067,
+          0.909089,
+          0.909087
+        ],
+        "atoms": [
+          {
+            "id": "a1",
+            "text": "The benchmark overview is provided",
+            "p_true": 0.904522,
+            "variable": "a1"
+          },
+          {
+            "id": "a3",
+            "text": "The benchmark has 817 questions",
+            "p_true": 0.909067,
+            "variable": "a3"
+          },
+          {
+            "id": "a4",
+            "text": "The benchmark questions span 38 categories",
+            "p_true": 0.909089,
+            "variable": "a4"
+          },
+          {
+            "id": "a5",
+            "text": "The benchmark categories include health, law, finance, and politics",
+            "p_true": 0.909087,
+            "variable": "a5"
+          }
+        ],
+        "all_neutral": false,
+        "non_neutral_count": 4,
+        "neutral_count": 0,
+        "accuracy_percentage": 100.0,
+        "error_percentage": 0.0
+      },
+      "benchmark_details.data_type": {
+        "total_atoms": 1,
+        "high_confidence_correct": 1,
+        "likely_correct": 0,
+        "uncertain": 0,
+        "likely_incorrect": 0,
+        "high_confidence_incorrect": 0,
+        "avg_probability": 0.989404,
+        "probabilities": [
+          0.989404
+        ],
+        "atoms": [
+          {
+            "id": "a2",
+            "text": "The data type of the benchmark is text",
+            "p_true": 0.989404,
+            "variable": "a2"
+          }
+        ],
+        "all_neutral": false,
+        "non_neutral_count": 1,
+        "neutral_count": 0,
+        "accuracy_percentage": 100.0,
+        "error_percentage": 0.0
+      },
+      "benchmark_details.similar_benchmarks": {
+        "total_atoms": 1,
+        "high_confidence_correct": 0,
+        "likely_correct": 0,
+        "uncertain": 1,
+        "likely_incorrect": 0,
+        "high_confidence_incorrect": 0,
+        "avg_probability": 0.5,
+        "probabilities": [
+          0.5
+        ],
+        "atoms": [
+          {
+            "id": "a6",
+            "text": "The benchmark is similar to GLUE, SuperGLUE, XTREME, and BigBench",
+            "p_true": 0.5,
+            "variable": "a6"
+          }
+        ],
+        "all_neutral": true,
+        "non_neutral_count": 0,
+        "neutral_count": 1,
+        "accuracy_percentage": 0.0,
+        "error_percentage": 0.0
+      },
+      "benchmark_details.resources": {
+        "total_atoms": 1,
+        "high_confidence_correct": 0,
+        "likely_correct": 0,
+        "uncertain": 1,
+        "likely_incorrect": 0,
+        "high_confidence_incorrect": 0,
+        "avg_probability": 0.5,
+        "probabilities": [
+          0.5
+        ],
+        "atoms": [
+          {
+            "id": "a7",
+            "text": "The benchmark resources include https://github.com/sylinrl/TruthfulQA and https://arxiv.org/abs/2109.07958",
+            "p_true": 0.5,
+            "variable": "a7"
+          }
+        ],
+        "all_neutral": true,
+        "non_neutral_count": 0,
+        "neutral_count": 1,
+        "accuracy_percentage": 0.0,
+        "error_percentage": 0.0
+      },
+      "purpose_and_intended_users.goal": {
+        "total_atoms": 1,
+        "high_confidence_correct": 1,
+        "likely_correct": 0,
+        "uncertain": 0,
+        "likely_incorrect": 0,
+        "high_confidence_incorrect": 0,
+        "avg_probability": 0.990096,
+        "probabilities": [
+          0.990096
+        ],
+        "atoms": [
+          {
+            "id": "a8",
+            "text": "The goal of the benchmark is to measure the truthfulness of language models",
+            "p_true": 0.990096,
+            "variable": "a8"
+          }
+        ],
+        "all_neutral": false,
+        "non_neutral_count": 1,
+        "neutral_count": 0,
+        "accuracy_percentage": 100.0,
+        "error_percentage": 0.0
+      },
+      "purpose_and_intended_users.audience": {
+        "total_atoms": 1,
+        "high_confidence_correct": 1,
+        "likely_correct": 0,
+        "uncertain": 0,
+        "likely_incorrect": 0,
+        "high_confidence_incorrect": 0,
+        "avg_probability": 0.867057,
+        "probabilities": [
+          0.867057
+        ],
+        "atoms": [
+          {
+            "id": "a9",
+            "text": "The benchmark is intended for NLP researchers, AI developers, and Truthfulness assessment teams",
+            "p_true": 0.867057,
+            "variable": "a9"
+          }
+        ],
+        "all_neutral": false,
+        "non_neutral_count": 1,
+        "neutral_count": 0,
+        "accuracy_percentage": 100.0,
+        "error_percentage": 0.0
+      },
+      "purpose_and_intended_users.tasks": {
+        "total_atoms": 1,
+        "high_confidence_correct": 1,
+        "likely_correct": 0,
+        "uncertain": 0,
+        "likely_incorrect": 0,
+        "high_confidence_incorrect": 0,
+        "avg_probability": 0.985933,
+        "probabilities": [
+          0.985933
+        ],
+        "atoms": [
+          {
+            "id": "a10",
+            "text": "The benchmark tasks include question answering, text generation, and truthfulness evaluation",
+            "p_true": 0.985933,
+            "variable": "a10"
+          }
+        ],
+        "all_neutral": false,
+        "non_neutral_count": 1,
+        "neutral_count": 0,
+        "accuracy_percentage": 100.0,
+        "error_percentage": 0.0
+      },
+      "data.source": {
+        "total_atoms": 1,
+        "high_confidence_correct": 0,
+        "likely_correct": 0,
+        "uncertain": 1,
+        "likely_incorrect": 0,
+        "high_confidence_incorrect": 0,
+        "avg_probability": 0.5,
+        "probabilities": [
+          0.5
+        ],
+        "atoms": [
+          {
+            "id": "a11",
+            "text": "The benchmark data source includes research papers and metadata from Hugging Face",
+            "p_true": 0.5,
+            "variable": "a11"
+          }
+        ],
+        "all_neutral": true,
+        "non_neutral_count": 0,
+        "neutral_count": 1,
+        "accuracy_percentage": 0.0,
+        "error_percentage": 0.0
+      },
+      "data.size": {
+        "total_atoms": 1,
+        "high_confidence_correct": 0,
+        "likely_correct": 1,
+        "uncertain": 0,
+        "likely_incorrect": 0,
+        "high_confidence_incorrect": 0,
+        "avg_probability": 0.758793,
+        "probabilities": [
+          0.758793
+        ],
+        "atoms": [
+          {
+            "id": "a12",
+            "text": "The benchmark data size is 817 total examples across 38 categories",
+            "p_true": 0.758793,
+            "variable": "a12"
+          }
+        ],
+        "all_neutral": false,
+        "non_neutral_count": 1,
+        "neutral_count": 0,
+        "accuracy_percentage": 100.0,
+        "error_percentage": 0.0
+      },
+      "data.format": {
+        "total_atoms": 1,
+        "high_confidence_correct": 0,
+        "likely_correct": 0,
+        "uncertain": 1,
+        "likely_incorrect": 0,
+        "high_confidence_incorrect": 0,
+        "avg_probability": 0.5,
+        "probabilities": [
+          0.5
+        ],
+        "atoms": [
+          {
+            "id": "a13",
+            "text": "The benchmark data format is JSON",
+            "p_true": 0.5,
+            "variable": "a13"
+          }
+        ],
+        "all_neutral": true,
+        "non_neutral_count": 0,
+        "neutral_count": 1,
+        "accuracy_percentage": 0.0,
+        "error_percentage": 0.0
+      },
+      "data.annotation": {
+        "total_atoms": 1,
+        "high_confidence_correct": 0,
+        "likely_correct": 1,
+        "uncertain": 0,
+        "likely_incorrect": 0,
+        "high_confidence_incorrect": 0,
+        "avg_probability": 0.784553,
+        "probabilities": [
+          0.784553
+        ],
+        "atoms": [
+          {
+            "id": "a14",
+            "text": "The benchmark data annotation involves professional annotators and crowdsourcing",
+            "p_true": 0.784553,
+            "variable": "a14"
+          }
+        ],
+        "all_neutral": false,
+        "non_neutral_count": 1,
+        "neutral_count": 0,
+        "accuracy_percentage": 100.0,
+        "error_percentage": 0.0
+      },
+      "methodology.methods": {
+        "total_atoms": 1,
+        "high_confidence_correct": 1,
+        "likely_correct": 0,
+        "uncertain": 0,
+        "likely_incorrect": 0,
+        "high_confidence_incorrect": 0,
+        "avg_probability": 0.989941,
+        "probabilities": [
+          0.989941
+        ],
+        "atoms": [
+          {
+            "id": "a15",
+            "text": "The benchmark methodology includes fine-tuning on human evaluations of truthfulness, automatic metric GPT-judge, and human evaluation",
+            "p_true": 0.989941,
+            "variable": "a15"
+          }
+        ],
+        "all_neutral": false,
+        "non_neutral_count": 1,
+        "neutral_count": 0,
+        "accuracy_percentage": 100.0,
+        "error_percentage": 0.0
+      },
+      "methodology.metrics": {
+        "total_atoms": 1,
+        "high_confidence_correct": 0,
+        "likely_correct": 0,
+        "uncertain": 1,
+        "likely_incorrect": 0,
+        "high_confidence_incorrect": 0,
+        "avg_probability": 0.5,
+        "probabilities": [
+          0.5
+        ],
+        "atoms": [
+          {
+            "id": "a16",
+            "text": "The benchmark metrics include accuracy, F1-score, and thresholded truth score",
+            "p_true": 0.5,
+            "variable": "a16"
+          }
+        ],
+        "all_neutral": true,
+        "non_neutral_count": 0,
+        "neutral_count": 1,
+        "accuracy_percentage": 0.0,
+        "error_percentage": 0.0
+      },
+      "methodology.calculation": {
+        "total_atoms": 1,
+        "high_confidence_correct": 1,
+        "likely_correct": 0,
+        "uncertain": 0,
+        "likely_incorrect": 0,
+        "high_confidence_incorrect": 0,
+        "avg_probability": 0.909064,
+        "probabilities": [
+          0.909064
+        ],
+        "atoms": [
+          {
+            "id": "a17",
+            "text": "Truthfulness is calculated as the percentage of answers that are true",
+            "p_true": 0.909064,
+            "variable": "a17"
+          }
+        ],
+        "all_neutral": false,
+        "non_neutral_count": 1,
+        "neutral_count": 0,
+        "accuracy_percentage": 100.0,
+        "error_percentage": 0.0
+      },
+      "methodology.baseline_results": {
+        "total_atoms": 2,
+        "high_confidence_correct": 2,
+        "likely_correct": 0,
+        "uncertain": 0,
+        "likely_incorrect": 0,
+        "high_confidence_incorrect": 0,
+        "avg_probability": 0.9539965,
+        "probabilities": [
+          0.998997,
+          0.908996
+        ],
+        "atoms": [
+          {
+            "id": "a18",
+            "text": "The best model was truthful on 58% of questions",
+            "p_true": 0.998997,
+            "variable": "a18"
+          },
+          {
+            "id": "a19",
+            "text": "Human performance on the benchmark was 94%",
+            "p_true": 0.908996,
+            "variable": "a19"
+          }
+        ],
+        "all_neutral": false,
+        "non_neutral_count": 2,
+        "neutral_count": 0,
+        "accuracy_percentage": 100.0,
+        "error_percentage": 0.0
+      },
+      "ethical_and_legal_considerations.data_licensing": {
+        "total_atoms": 1,
+        "high_confidence_correct": 1,
+        "likely_correct": 0,
+        "uncertain": 0,
+        "likely_incorrect": 0,
+        "high_confidence_incorrect": 0,
+        "avg_probability": 0.99009,
+        "probabilities": [
+          0.99009
+        ],
+        "atoms": [
+          {
+            "id": "a20",
+            "text": "The data licensing for the benchmark is Apache License, Version 2.0",
+            "p_true": 0.99009,
+            "variable": "a20"
+          }
+        ],
+        "all_neutral": false,
+        "non_neutral_count": 1,
+        "neutral_count": 0,
+        "accuracy_percentage": 100.0,
+        "error_percentage": 0.0
+      }
+    }
+  },
+  "atom_summary": [
+    {
+      "atom_id": "a0",
+      "field": "benchmark_details.name",
+      "text": "The benchmark name is safety.truthful_qa",
+      "factuality_score": 0.0941,
+      "confidence_level": "HIGH_CONFIDENCE_INCORRECT",
+      "variable_name": "a0"
+    },
+    {
+      "atom_id": "a6",
+      "field": "benchmark_details.similar_benchmarks",
+      "text": "The benchmark is similar to GLUE, SuperGLUE, XTREME, and BigBench",
+      "factuality_score": 0.5,
+      "confidence_level": "UNCERTAIN",
+      "variable_name": "a6"
+    },
+    {
+      "atom_id": "a7",
+      "field": "benchmark_details.resources",
+      "text": "The benchmark resources include https://github.com/sylinrl/TruthfulQA and https://arxiv.org/abs/2109.07958",
+      "factuality_score": 0.5,
+      "confidence_level": "UNCERTAIN",
+      "variable_name": "a7"
+    },
+    {
+      "atom_id": "a11",
+      "field": "data.source",
+      "text": "The benchmark data source includes research papers and metadata from Hugging Face",
+      "factuality_score": 0.5,
+      "confidence_level": "UNCERTAIN",
+      "variable_name": "a11"
+    },
+    {
+      "atom_id": "a13",
+      "field": "data.format",
+      "text": "The benchmark data format is JSON",
+      "factuality_score": 0.5,
+      "confidence_level": "UNCERTAIN",
+      "variable_name": "a13"
+    },
+    {
+      "atom_id": "a16",
+      "field": "methodology.metrics",
+      "text": "The benchmark metrics include accuracy, F1-score, and thresholded truth score",
+      "factuality_score": 0.5,
+      "confidence_level": "UNCERTAIN",
+      "variable_name": "a16"
+    },
+    {
+      "atom_id": "a12",
+      "field": "data.size",
+      "text": "The benchmark data size is 817 total examples across 38 categories",
+      "factuality_score": 0.7588,
+      "confidence_level": "LIKELY_CORRECT",
+      "variable_name": "a12"
+    },
+    {
+      "atom_id": "a14",
+      "field": "data.annotation",
+      "text": "The benchmark data annotation involves professional annotators and crowdsourcing",
+      "factuality_score": 0.7846,
+      "confidence_level": "LIKELY_CORRECT",
+      "variable_name": "a14"
+    },
+    {
+      "atom_id": "a9",
+      "field": "purpose_and_intended_users.audience",
+      "text": "The benchmark is intended for NLP researchers, AI developers, and Truthfulness assessment teams",
+      "factuality_score": 0.8671,
+      "confidence_level": "HIGH_CONFIDENCE_CORRECT",
+      "variable_name": "a9"
+    },
+    {
+      "atom_id": "a1",
+      "field": "benchmark_details.overview",
+      "text": "The benchmark overview is provided",
+      "factuality_score": 0.9045,
+      "confidence_level": "HIGH_CONFIDENCE_CORRECT",
+      "variable_name": "a1"
+    },
+    {
+      "atom_id": "a19",
+      "field": "methodology.baseline_results",
+      "text": "Human performance on the benchmark was 94%",
+      "factuality_score": 0.909,
+      "confidence_level": "HIGH_CONFIDENCE_CORRECT",
+      "variable_name": "a19"
+    },
+    {
+      "atom_id": "a3",
+      "field": "benchmark_details.overview",
+      "text": "The benchmark has 817 questions",
+      "factuality_score": 0.9091,
+      "confidence_level": "HIGH_CONFIDENCE_CORRECT",
+      "variable_name": "a3"
+    },
+    {
+      "atom_id": "a4",
+      "field": "benchmark_details.overview",
+      "text": "The benchmark questions span 38 categories",
+      "factuality_score": 0.9091,
+      "confidence_level": "HIGH_CONFIDENCE_CORRECT",
+      "variable_name": "a4"
+    },
+    {
+      "atom_id": "a5",
+      "field": "benchmark_details.overview",
+      "text": "The benchmark categories include health, law, finance, and politics",
+      "factuality_score": 0.9091,
+      "confidence_level": "HIGH_CONFIDENCE_CORRECT",
+      "variable_name": "a5"
+    },
+    {
+      "atom_id": "a17",
+      "field": "methodology.calculation",
+      "text": "Truthfulness is calculated as the percentage of answers that are true",
+      "factuality_score": 0.9091,
+      "confidence_level": "HIGH_CONFIDENCE_CORRECT",
+      "variable_name": "a17"
+    },
+    {
+      "atom_id": "a10",
+      "field": "purpose_and_intended_users.tasks",
+      "text": "The benchmark tasks include question answering, text generation, and truthfulness evaluation",
+      "factuality_score": 0.9859,
+      "confidence_level": "HIGH_CONFIDENCE_CORRECT",
+      "variable_name": "a10"
+    },
+    {
+      "atom_id": "a2",
+      "field": "benchmark_details.data_type",
+      "text": "The data type of the benchmark is text",
+      "factuality_score": 0.9894,
+      "confidence_level": "HIGH_CONFIDENCE_CORRECT",
+      "variable_name": "a2"
+    },
+    {
+      "atom_id": "a15",
+      "field": "methodology.methods",
+      "text": "The benchmark methodology includes fine-tuning on human evaluations of truthfulness, automatic metric GPT-judge, and human evaluation",
+      "factuality_score": 0.9899,
+      "confidence_level": "HIGH_CONFIDENCE_CORRECT",
+      "variable_name": "a15"
+    },
+    {
+      "atom_id": "a8",
+      "field": "purpose_and_intended_users.goal",
+      "text": "The goal of the benchmark is to measure the truthfulness of language models",
+      "factuality_score": 0.9901,
+      "confidence_level": "HIGH_CONFIDENCE_CORRECT",
+      "variable_name": "a8"
+    },
+    {
+      "atom_id": "a20",
+      "field": "ethical_and_legal_considerations.data_licensing",
+      "text": "The data licensing for the benchmark is Apache License, Version 2.0",
+      "factuality_score": 0.9901,
+      "confidence_level": "HIGH_CONFIDENCE_CORRECT",
+      "variable_name": "a20"
+    },
+    {
+      "atom_id": "a18",
+      "field": "methodology.baseline_results",
+      "text": "The best model was truthful on 58% of questions",
+      "factuality_score": 0.999,
+      "confidence_level": "HIGH_CONFIDENCE_CORRECT",
+      "variable_name": "a18"
+    }
+  ]
+}
